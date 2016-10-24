@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/qtyview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/qtyiv"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/qty_view_size"
+            android:background="@drawable/xmlbg_qtybg"
+            android:scaleType="fitXY" />
+
+        <TextView
+            android:id="@+id/qtytv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:textSize="@dimen/qty_textsize" />
+    </RelativeLayout>
+
+</RelativeLayout>

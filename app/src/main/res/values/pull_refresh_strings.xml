@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pull_to_refresh_pull_label">下拉可以刷新&#8230;</string>
+    <string name="pull_to_refresh_release_label">松开可以刷新&#8230;</string>
+    <string name="pull_to_refresh_refreshing_label">加载中&#8230;</string>
+    <string name="pull_to_refresh_tap_label">点击刷新&#8230;</string>
+    <string name="last_update_time">上次刷新时间</string>
+
+</resources>

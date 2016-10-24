@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/topBTN"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/custom_dialog_btn"
+        android:textColor="#000000"
+        android:text="拍照"
+        android:paddingTop="@dimen/margin_b2"
+        android:paddingBottom="@dimen/margin_b2"
+        android:background="@drawable/xmlbtn_top_radius"
+        style="14sp"
+        android:gravity="center"  />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border"
+        />
+
+    <Button
+        android:id="@+id/bottomBTN"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/custom_dialog_btn"
+        android:text="相册"
+        style="14sp"
+        android:paddingTop="@dimen/margin_b2"
+        android:paddingBottom="@dimen/margin_b2"
+        android:background="@drawable/xmlbtn_bottom_radius"
+        android:textColor="#000000"
+        android:gravity="center"  />
+
+</LinearLayout>

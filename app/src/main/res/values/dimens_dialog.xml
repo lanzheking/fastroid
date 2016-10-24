@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="custom_dialog_title">14sp</dimen>
+    <dimen name="custom_dialog_content">14sp</dimen>
+    <dimen name="custom_dialog_btn">14sp</dimen>
+</resources>

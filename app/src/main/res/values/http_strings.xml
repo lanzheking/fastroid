@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="server_not_reached">服务器无响应</string>
+    <string name="network_unavailable">无网络连接</string>
+
+</resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="text_normal">#333333</color>
+
+    <color name="none">#00000000</color>
+    <color name="blue">#015198</color>
+    <color name="green">#50b549</color>
+
+    <color name="page_back">#fff2f2f2</color>
+    <color name="logo_text_color">#ff7f7f7f</color>
+    <color name="white">#ffffffff</color>
+    <color name="login_with_other_plat_text_color">#ff383838</color>
+    <color name="dialog_white_bg">#fbfbfb</color>
+
+    <!-- 标题 -->
+    <color name="title_home">#f85655</color>
+    <color name="title_home_pressed">#8a664b</color>
+    <color name="title_standard_bg">#f2f2f2</color>
+    <color name="title_standard_text">#333333</color>
+    <color name="title_left_text">#ff941a</color>
+    <color name="title_right_text">#ff941a</color>
+    <color name="title_middle_text">#000000</color>
+    <color name="text_gray">#a0a0a0</color>
+    <color name="title_back">#fcfcfc</color>
+    <color name="title_text">#000000</color>
+
+    <color name="divider">#b2b2b2</color>
+    <color name="dividerlight">#d7e5fe</color>
+
+</resources>

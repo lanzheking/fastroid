@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+
+    <CalendarView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:id="@id/calendarview1"
+        android:showWeekNumber="false"
+        android:unfocusedMonthDateColor="@color/text_gray"
+        android:weekSeparatorLineColor="@color/none"
+        android:selectedWeekBackgroundColor="@color/title_back" />
+
+    <Button
+        android:id="@id/btn1"
+        android:layout_marginTop="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="确定"
+        style="@style/btn_blue_b" />
+    <!--    <CalendarView
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:id="@+id/calendarView"
+            android:showWeekNumber="false"
+            android:layout_gravity="right"
+            android:weekNumberColor="@color/blue"
+            android:unfocusedMonthDateColor="@color/text_gray"
+            android:selectedWeekBackgroundColor="@color/titleback"
+            android:focusedMonthDateColor="@color/white" />-->
+
+</LinearLayout>

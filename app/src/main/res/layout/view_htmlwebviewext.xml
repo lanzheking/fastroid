@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.honestwalker.android.commons.views.HtmlWebView.HtmlWebView
+        android:id="@+id/htmlwebview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></com.honestwalker.android.commons.views.HtmlWebView.HtmlWebView>
+
+    <RelativeLayout
+        android:id="@+id/network_err_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+        <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:id="@id/btn1"-->
+        <!--android:background="#00ffffff"-->
+        <!--android:layout_alignParentTop="true" />-->
+
+        <ImageView
+            android:id="@+id/network_err_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/image_loadingscreen_wangluo3x"
+            android:layout_above="@+id/textView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="当前网络异常"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:textColor="#bfbfbf"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

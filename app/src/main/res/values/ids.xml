@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="title" type="id" />
+    <item name="viewpage" type="id" />
+    <item name="indicator" type="id" />
+
+    <item name="textview1" type="id" />
+    <item name="textview2" type="id" />
+    <item name="textview3" type="id" />
+    <item name="textview4" type="id" />
+    <item name="textview5" type="id" />
+    <item name="textview6" type="id" />
+    <item name="textview7" type="id" />
+    <item name="textview8" type="id" />
+    <item name="textview9" type="id" />
+    <item name="textview10" type="id" />
+    <item name="textview11" type="id" />
+    <item name="textview12" type="id" />
+    <item name="textview13" type="id" />
+    <item name="textview14" type="id" />
+    <item name="textview15" type="id" />
+    <item name="textview16" type="id" />
+
+    <item name="imageview1" type="id" />
+    <item name="imageview2" type="id" />
+    <item name="imageview3" type="id" />
+    <item name="imageview4" type="id" />
+    <item name="imageview5" type="id" />
+    <item name="imageview6" type="id" />
+    <item name="imageview7" type="id" />
+    <item name="imageview8" type="id" />
+
+    <item name="btn1" type="id" />
+    <item name="btn2" type="id" />
+    <item name="btn3" type="id" />
+    <item name="btn4" type="id" />
+    <item name="btn5" type="id" />
+    <item name="btn6" type="id" />
+    <item name="btn7" type="id" />
+    <item name="btn8" type="id" />
+
+    <item name="radiobtn1" type="id" />
+    <item name="radiobtn2" type="id" />
+    <item name="radiobtn3" type="id" />
+    <item name="radiobtn4" type="id" />
+    <item name="radiobtn5" type="id" />
+
+    <item name="edittext1" type="id" />
+    <item name="edittext2" type="id" />
+    <item name="edittext3" type="id" />
+    <item name="edittext4" type="id" />
+    <item name="edittext5" type="id" />
+    <item name="edittext6" type="id" />
+    <item name="edittext7" type="id" />
+    <item name="edittext8" type="id" />
+    <item name="edittext9" type="id" />
+    <item name="edittext10" type="id" />
+    <item name="edittext11" type="id" />
+    <item name="edittext12" type="id" />
+    <item name="edittext13" type="id" />
+    <item name="edittext14" type="id" />
+    <item name="edittext15" type="id" />
+
+    <item name="listview" type="id" />
+    <item name="listview1" type="id" />
+    <item name="listview2" type="id" />
+
+    <item name="scrollview1" type="id" />
+
+    <item name="menu_bg_iv1" type="id" />
+    <item name="menu_bg_iv2" type="id" />
+    <item name="menu_bg_iv3" type="id" />
+    <item name="menu_bg_iv4" type="id" />
+    <item name="menu_bg_iv5" type="id" />
+
+    <item name="menuview1" type="id" />
+    <item name="menuview2" type="id" />
+    <item name="menuview3" type="id" />
+    <item name="menuview4" type="id" />
+    <item name="menuview5" type="id" />
+
+    <item name="layout1" type="id" />
+    <item name="layout2" type="id" />
+    <item name="layout3" type="id" />
+    <item name="layout4" type="id" />
+    <item name="layout5" type="id" />
+    <item name="layout6" type="id" />
+    <item name="layout7" type="id" />
+    <item name="layout8" type="id" />
+    <item name="layout9" type="id" />
+    <item name="layout10" type="id" />
+    <item name="layout11" type="id" />
+
+    <item name="progressbar1" type="id" />
+    <item name="ratingbar1" type="id" />
+    <item name="calendarview1" type="id" />
+
+    <!-- 标题 -->
+    <item name="title_layout" type="id" />
+    <item name="title_left_layout" type="id" />
+    <item name="title_left_iv" type="id" />
+    <item name="title_left_tv" type="id" />
+    <item name="title_right_layout" type="id" />
+    <item name="title_right_iv" type="id" />
+    <item name="title_right_tv" type="id" />
+    <item name="title_middle_tv" type="id" />
+    <item name="title_middle_iv" type="id" />
+    <item type="id" name="title_home_edit_layout" />
+
+    <item name="view1" type="id" />
+    <item name="view2" type="id" />
+    <item name="view3" type="id" />
+    <item name="view4" type="id" />
+    <item name="view5" type="id" />
+    <item name="view6" type="id" />
+
+    <item name="viewstub1" type="id" />
+    <item name="viewstub2" type="id" />
+    <item name="viewstub3" type="id" />
+    <item name="viewstub4" type="id" />
+    <item name="viewstub5" type="id" />
+    <item name="viewstub6" type="id" />
+
+    <item name="view_sub_title" type="id" />
+    <item name="view_tab_menu" type="id" />
+
+    <item name="viewflow" type="id" />
+    <item name="viewflowindic" type="id" />
+
+    <item name="tag1" type="id" />
+    <item name="tag2" type="id" />
+    <item name="tag3" type="id" />
+    <item name="tag4" type="id" />
+    <item name="tag5" type="id" />
+
+    <item name="spinner1" type="id" />
+    <item name="spinner2" type="id" />
+    <item name="spinner3" type="id" />
+
+    <item name="mask" type="id" />
+
+    <item name="ratingbar" type="id" />
+
+    <item name="webview" type="id" />
+    <item name="webview1" type="id" />
+
+    <item name="checkbox1" type="id" />
+
+    <item name="gridview" type="id" />
+
+    <item name="pager" type="id" />
+
+
+    <item name="longbuttonview1" type="id" />
+    <item name="longbuttonview2" type="id" />
+    <item name="longbuttonview3" type="id" />
+    <item name="longbuttonview4" type="id" />
+
+    <!-- zxing -->
+    <item type="id" name="auto_focus" />
+    <item type="id" name="decode" />
+    <item type="id" name="decode_failed" />
+    <item type="id" name="decode_succeeded" />
+    <item type="id" name="encode_failed" />
+    <item type="id" name="encode_succeeded" />
+    <item type="id" name="launch_product_query" />
+    <item type="id" name="quit" />
+    <item type="id" name="restart_preview" />
+    <item type="id" name="return_scan_result" />
+    <item type="id" name="search_book_contents_failed" />
+    <item type="id" name="search_book_contents_succeeded" />
+
+    <item type="id" name="seekbar1" />
+
+    <item type="id" name="dim_bg_view" />
+    <item type="id" name="background" />
+    <item type="id" name="secondaryProgress" />
+    <item type="id" name="progress" />
+    <item type="id" name="asyncimageview1" />
+
+    <item type="id" name="map" />
+
+    <item type="id" name="frame_layout" />
+
+    <item type="id" name="statuview1" />
+    <item type="id" name="statuview2" />
+    <item type="id" name="statuview3" />
+    <item type="id" name="statuview4" />
+
+
+
+</resources>

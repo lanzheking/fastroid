@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="menubar_padding">0dp</dimen>
+    <color name="menubar_normal">#000000</color>
+    <color name="menubar_fource">#565656</color>
+
+    <dimen name="manubar_height">60dp</dimen>
+    <dimen name="manubar_icon_size">30dp</dimen>
+
+</resources>

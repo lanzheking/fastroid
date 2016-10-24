@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <corners android:bottomLeftRadius="4dp" android:bottomRightRadius="4dp" />
+            <solid android:color="#eeeeee" />
+        </shape>
+    </item>
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <corners android:bottomLeftRadius="4dp" android:bottomRightRadius="4dp" />
+            <solid android:color="#eeeeee" />
+        </shape>
+    </item>
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <corners android:bottomLeftRadius="4dp" android:bottomRightRadius="4dp" />
+            <solid android:color="#eeeeee" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <corners android:bottomLeftRadius="4dp" android:bottomRightRadius="4dp" />
+            <solid android:color="#eeeeee" />
+        </shape>
+    </item>
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <corners android:bottomLeftRadius="4dp" android:bottomRightRadius="4dp" />
+            <solid android:color="#eeeeee" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:bottomLeftRadius="4dp" android:bottomRightRadius="4dp" />
+            <solid android:color="#ffffff" />
+        </shape>
+    </item>
+
+</selector><!--<?xml version="1.0" encoding="utf-8"?>--><!--<selector xmlns:android="http://schemas.android.com/apk/res/android">--><!--<item android:state_selected="true" android:drawable="@drawable/xmlbg_white_right_bottom_radius_pressed" />--><!--<item android:state_focused="true" android:drawable="@drawable/xmlbg_white_right_bottom_radius_pressed" />-->
+
+    <!--<item android:state_focused="false" android:drawable="@drawable/xmlbg_white_right_bottom_radius" />--><!--<item android:state_selected="false" android:drawable="@drawable/xmlbg_white_right_bottom_radius" />--><!--<item android:drawable="@drawable/xmlbg_white_right_bottom_radius" />--><!--</selector>-->

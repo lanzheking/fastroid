@@ -1,0 +1,28 @@
+<resources>
+
+    <dimen name="margin_s5">1dp</dimen>
+    <dimen name="margin_s4">2dp</dimen>
+    <dimen name="margin_s3">4dp</dimen>
+    <dimen name="margin_s2">6dp</dimen>
+    <dimen name="margin_s1">8dp</dimen>
+    <dimen name="margin">10dp</dimen>
+    <dimen name="margin_b1">12dp</dimen>
+    <dimen name="margin_b2">14dp</dimen>
+    <dimen name="margin_b3">16dp</dimen>
+    <dimen name="margin_b4">18dp</dimen>
+    <dimen name="margin_b5">20dp</dimen>
+    <dimen name="margin_b6">30dp</dimen>
+    <dimen name="margin_b7">40dp</dimen>
+    <dimen name="margin_b8">50dp</dimen>
+
+    <dimen name="imageheight">11dp</dimen>
+
+    <dimen name="show_image_title_text">18sp</dimen>
+    <dimen name="show_image_title_btntext">16sp</dimen>
+
+    <dimen name="normal_radius">4dp</dimen>
+
+    <integer name="arrow_scaleX">10</integer>
+    <integer name="arrow_scaleY">20</integer>
+
+</resources>

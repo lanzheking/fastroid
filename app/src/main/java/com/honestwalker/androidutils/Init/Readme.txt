@@ -1,0 +1,3 @@
+App 初始化策略模块
+需要初始化的类实现InitAction接口，并实现init方法，他做具体初始化业务。
+app启动会根据raw/init_strategy.xml 下的初始化策略配置自动依次进行初始化动作。
