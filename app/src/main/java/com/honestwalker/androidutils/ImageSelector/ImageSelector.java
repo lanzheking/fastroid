@@ -460,6 +460,24 @@ public class ImageSelector {
 
 			Log.d(TAG, "图片选择完成 picturePath=" + picturePath);
 
+			int degree = PictureUtil.readPictureDegree(picturePath);
+
+			if(maxWidthPx != 0) {
+				ImageUtil imageUtl = new ImageUtil();
+				imageUtl.imageZip(picturePath, maxWidthPx);
+				LogCat.d(TAG, "拍照完毕 图片压缩到 " + maxWidthPx);
+			}
+
+			LogCat.d(TAG , "拍照后图片方向: " + degree);
+			if(degree != 0) {
+				boolean rotateResult = PictureUtil.rotate(picturePath , degree);
+				if(rotateResult) {
+					LogCat.d(TAG , "照片转正成功");
+				} else {
+					LogCat.d(TAG , "照片转正失败");
+				}
+			}
+
 			intent.putExtra("imgPath", picturePath);
 
 		} else if(ImageSelector.REQUEST_SINGLE_IMAGE_SELECT == requestCode) {
