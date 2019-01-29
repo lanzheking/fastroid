@@ -1,16 +1,22 @@
 package com.honestwalker.androidutils.IO;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 
 import com.honestwalker.androidutils.exception.ExceptionUtil;
 
+/**
+ * 文本输入，输出工具类
+ */
 public class FileIO {
 	
 	/**
@@ -29,7 +35,6 @@ public class FileIO {
 				dir.mkdirs();
 			}
 			file = new File(filePath + File.separator + fileName);
-			LogCat.d("ddddd" , "输出 " + file.getPath());
 			if(!file.exists()) {
 				file.createNewFile();
 			}
@@ -97,22 +102,6 @@ public class FileIO {
 		saveFile(data , desFile.getPath().replace(desFile.getName() , "") , desFile.getName());
 	}
 
-//	private static long copy(File f1,File f2) throws Exception{
-//		int length=2097152;
-//		FileInputStream in=new FileInputStream(f1);
-//		FileOutputStream out=new FileOutputStream(f2);
-//		byte[] buffer=new byte[length];
-//		while(true){
-//			int ins=in.read(buffer);
-//			if(ins==-1){
-//				in.close();
-//				out.flush();
-//				out.close();
-//			}else
-//				out.write(buffer,0,ins);
-//		}
-//	}
-
 	public static void deleteFile(String file) {
 		try {
 			new File(file).delete();
@@ -120,5 +109,59 @@ public class FileIO {
 			ExceptionUtil.showException(e);
 		}
 	}
+
+    /**
+     * 读取文件
+     *
+     * @param filePath 文件路径
+     */
+    public static String readFile(String filePath) {
+        try {
+            String encoding = "GBK";
+            File file = new File(filePath);
+            if (file.isFile() && file.exists()) { // 判断文件是否存在
+                InputStreamReader read = new InputStreamReader(new FileInputStream(file), encoding);// 考虑到编码格式
+                BufferedReader bufferedReader = new BufferedReader(read);
+                String lineTxt = null;
+                StringBuffer result = new StringBuffer();
+                while ((lineTxt = bufferedReader.readLine()) != null) {
+                    result.append(lineTxt).append("\r\n");
+                }
+                read.close();
+                bufferedReader.close();
+                return result.toString();
+            } else {
+                System.out.println("找不到指定的文件");
+            }
+        } catch (Exception e) {
+            System.out.println("读取文件内容出错");
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static void write(String fileName, String content) {
+        write(fileName, content, false);
+    }
+
+    private static void write(String fileName, String content, boolean append) {
+        try {
+            //打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件
+            File file = new File(fileName);
+            if(!file.exists()) file.createNewFile();
+            FileWriter writer = new FileWriter(file, append);
+            writer.write(content);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 方法追加文件：使用FileWriter
+     */
+    public static void append(String fileName, String content) {
+        write(fileName, content, true);
+    }
 
 }

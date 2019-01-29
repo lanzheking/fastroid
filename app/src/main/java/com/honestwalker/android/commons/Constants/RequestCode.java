@@ -1,5 +1,8 @@
 package com.honestwalker.android.commons.Constants;
 
+/**
+ * Kancart API response code
+ */
 public class RequestCode {
 	
 	/** 登录request code */

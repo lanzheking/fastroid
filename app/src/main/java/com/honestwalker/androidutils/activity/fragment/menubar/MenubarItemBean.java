@@ -1,5 +1,8 @@
 package com.honestwalker.androidutils.activity.fragment.menubar;
 
+/**
+ * 菜单条目对象
+ */
 public class MenubarItemBean {
 
 	private String id;
@@ -58,6 +61,7 @@ public class MenubarItemBean {
 	public void setIsHome(boolean isHome) {
 		this.isHome = isHome;
 	}
+
 	public boolean isHome() {
 		return isHome;
 	}

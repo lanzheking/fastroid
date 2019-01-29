@@ -23,10 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.honestwalker.androidutils.ViewUtils.ViewSizeHelper;
-import com.lidroid.xutils.BitmapUtils;
-import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
-import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
-import com.lidroid.xutils.bitmap.callback.DefaultBitmapLoadCallBack;
+
+import org.xutils.common.Callback;
+import org.xutils.x;
 
 
 /**
@@ -38,15 +37,11 @@ public class AsyncRoundCornerImageView extends RelativeLayout {
 
 	private ImageView imageView;
 	private ProgressBar progressBar;
-	private BitmapUtils bitmapUtils;
 	public ImageView getImageView() {
 		return imageView;
 	}
 	public ProgressBar getProgressBar() {
 		return progressBar;
-	}
-	public BitmapUtils getBitmapUtils() {
-		return bitmapUtils;
 	}
 
 	private final float defaultRadiusRatio = 15;
@@ -80,8 +75,6 @@ public class AsyncRoundCornerImageView extends RelativeLayout {
 		lp.addRule(RelativeLayout.CENTER_IN_PARENT);
 		this.addView(progressBar, lp);
 		
-		bitmapUtils = new BitmapUtils(context);
-		bitmapUtils.configDefaultBitmapConfig(Config.ARGB_8888);
 	}
 
 	public void setImageBitmap(final Bitmap bitmap){
@@ -108,39 +101,9 @@ public class AsyncRoundCornerImageView extends RelativeLayout {
 		Bitmap cropBitmap = resizeBitmapByCenterCrop(bitmap, width, height);
 		imageView.setImageBitmap(getRoundedBitmap(cropBitmap, defaultRadiusRatio));
 	}
-	
-	public AsyncRoundCornerImageView configDefaultLoadingImage(int loadingImageRes){
-		 bitmapUtils.configDefaultLoadingImage(loadingImageRes);
-	     return this;
-	}
 
-	public AsyncRoundCornerImageView configDefaultLoadingImage(Drawable loadingImagedDrawable){
-		bitmapUtils.configDefaultLoadingImage(loadingImagedDrawable);
-		return this;
-	}
-
-	public AsyncRoundCornerImageView configDefaultLoadingImage(Bitmap loadingImagedBitmap){
-		bitmapUtils.configDefaultLoadingImage(loadingImagedBitmap);
-		return this;
-	}
-	
-	public AsyncRoundCornerImageView configDefaultLoadFailedImage(int loadFailedImageRes){
-		bitmapUtils.configDefaultLoadFailedImage(loadFailedImageRes);
-		return this;
-	}
-	
-	public AsyncRoundCornerImageView configDefaultLoadFailedImage(Drawable loadFailedImageDrawable){
-		bitmapUtils.configDefaultLoadFailedImage(loadFailedImageDrawable);
-		return this;
-	}
-
-	public AsyncRoundCornerImageView configDefaultLoadFailedImage(Bitmap loadFailedImageBitmap){
-		bitmapUtils.configDefaultLoadFailedImage(loadFailedImageBitmap);
-		return this;
-	}
-	
-	public void loadUrl(String imageUrl) {
-		bitmapUtils.display(imageView, imageUrl, new CustomBitmapLoadCallBack());
+	public void setImageDrawable(Drawable drawable) {
+		imageView.setImageDrawable(drawable);
 	}
 	
 	public void loadUrl(String imageUrl, int width, int height) {
@@ -148,8 +111,31 @@ public class AsyncRoundCornerImageView extends RelativeLayout {
 		ViewSizeHelper.getInstance(context).setHeight(this, height);
 		ViewSizeHelper.getInstance(context).setWidth(imageView, width);
 		ViewSizeHelper.getInstance(context).setHeight(imageView, height);
-		bitmapUtils.display(imageView, imageUrl, new CustomBitmapLoadCallBack());
+		x.image().bind(new ImageView(context), imageUrl, commonCallback);
 	}
+
+	private Callback.CommonCallback<Drawable> commonCallback = new Callback.CommonCallback<Drawable>() {
+		@Override
+		public void onSuccess(Drawable drawable) {
+			progressBar.setVisibility(View.GONE);
+			setImageDrawable(drawable);
+		}
+
+		@Override
+		public void onError(Throwable ex, boolean isOnCallback) {
+
+		}
+
+		@Override
+		public void onCancelled(CancelledException cex) {
+
+		}
+
+		@Override
+		public void onFinished() {
+
+		}
+	};
 	
 	private static final ColorDrawable TRANSPARENT_DRAWABLE = new ColorDrawable(android.R.color.transparent);
 
@@ -175,17 +161,6 @@ public class AsyncRoundCornerImageView extends RelativeLayout {
 			imageView.setImageDrawable(transitionDrawable);
 			transitionDrawable.startTransition(500);
 		}
-    }
-	
-	public class CustomBitmapLoadCallBack extends DefaultBitmapLoadCallBack<ImageView> {
-
-        @Override
-        public void onLoadCompleted(ImageView container, String uri, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
-        	progressBar.setVisibility(View.GONE);
-        	fadeInDisplay(container, bitmap);
-        	imageView.setBackgroundColor(Color.argb( 0, 0, 0, 0));
-//        	setImageBitmap(bitmap);
-        }
     }
 	
 	/**

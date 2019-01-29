@@ -6,6 +6,9 @@ import java.lang.reflect.Field;
 
 import com.honestwalker.androidutils.exception.ExceptionUtil;
 
+/**
+ * R索引文件读取工具类
+ */
 public class RClassUtil {
 	
 	/**
@@ -41,6 +44,7 @@ public class RClassUtil {
 				}
 			}
 		} catch (Exception e) {
+			ExceptionUtil.showException(e);
 		}
 		
 		throw new android.content.res.Resources.NotFoundException();
@@ -100,7 +104,7 @@ public class RClassUtil {
 	 * @throws android.content.res.Resources.NotFoundException
 	 */
 	public static int getDrawableResIdByName(Class RClass, String name) throws android.content.res.Resources.NotFoundException {
-		
+
 		if(name == null) {
 			throw new android.content.res.Resources.NotFoundException();
 		}
@@ -116,7 +120,7 @@ public class RClassUtil {
 					break;
 				}
 			}
-			
+
 			if(drawableClass == null) {
 				throw new android.content.res.Resources.NotFoundException();
 			}

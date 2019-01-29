@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.widget.Toast;
 
 import com.honestwalker.android.fastroid.R;
+import com.honestwalker.android.spring.core.annotation.RunInMainThread;
 import com.honestwalker.androidutils.UIHandler;
 
 public class NetworkToastManager {
@@ -103,13 +104,9 @@ public class NetworkToastManager {
 	 * 显示Toast
 	 * @param toast
 	 */
+	@RunInMainThread
 	private static void showToast(final Toast toast) {
-		UIHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				toast.show();
-			}
-		});
+		toast.show();
 	}
 
 	static final String ACTION_NETWORK_TIMEOUT = "ACTION_NETWORK_TIMEOUT";

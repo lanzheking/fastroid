@@ -1,5 +1,7 @@
 package com.honestwalker.androidutils.ImageSelector;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 

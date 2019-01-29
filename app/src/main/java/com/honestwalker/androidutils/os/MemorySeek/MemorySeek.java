@@ -18,6 +18,7 @@ import com.honestwalker.androidutils.MemoryUtil;
 import com.honestwalker.androidutils.ShowMemoryListener;
 
 /**
+ * 内存使用监听工具
  * Created by honestwalker on 15-10-10.
  */
 public class MemorySeek implements View.OnTouchListener {

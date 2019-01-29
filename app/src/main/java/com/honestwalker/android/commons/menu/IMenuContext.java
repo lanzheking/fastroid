@@ -9,6 +9,7 @@ import com.honestwalker.androidutils.activity.fragment.menubar.MenubarItemBean;
  * Created by honestwalker on 15-12-9.
  */
 public interface IMenuContext {
+
     public Activity getActivity();
 
     public void onPageScrolled(int i, float v, int i1);

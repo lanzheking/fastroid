@@ -1,11 +1,12 @@
 package com.honestwalker.androidutils.pool;
 
-import java.util.HashMap;
-import java.util.List;
+import com.honestwalker.androidutils.exception.ExceptionUtil;
+
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 线程池工具
@@ -28,7 +29,7 @@ public class ThreadPool {
 		threadPool.submit(runnable);
 	}
 
-		public static void threadPool(Object id , Runnable runnable) {
+	public static void threadPool(Object id , Runnable runnable) {
 		threadPool.submit(runnable);
 	}
 	
@@ -41,6 +42,16 @@ public class ThreadPool {
 			Thread.sleep(time);
 		} catch (InterruptedException e) {
 		}
+	}
+
+	public static <V> V threadPool(Callable<V> task) {
+		Future<V> future = threadPool.submit(task);
+		try {
+			return future.get();
+		} catch (Exception e) {
+			ExceptionUtil.showException(e);
+		}
+		return null;
 	}
 	
 }

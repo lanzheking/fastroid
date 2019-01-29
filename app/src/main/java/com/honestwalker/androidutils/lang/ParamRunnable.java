@@ -3,6 +3,7 @@ package com.honestwalker.androidutils.lang;
 import com.honestwalker.androidutils.net.Parameter;
 
 /**
+ * 带参数的runnable
  * Created by honestwalker on 16-1-21.
  */
 public abstract class ParamRunnable implements Runnable {

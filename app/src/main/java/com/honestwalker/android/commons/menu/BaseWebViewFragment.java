@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.honestwalker.android.fastroid.R;
 import com.honestwalker.android.commons.views.HtmlWebView.HtmlWebViewExt;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
 
 /**
  *
@@ -18,7 +16,6 @@ public class BaseWebViewFragment extends BaseTabIconFragment {
 
     private LinearLayout contentView;
 
-//    @ViewInject(R.id.fragment_webview)
     private HtmlWebViewExt webView;
 
     private String url = "";
@@ -26,7 +23,6 @@ public class BaseWebViewFragment extends BaseTabIconFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         contentView = (LinearLayout) inflater.inflate(R.layout.fragment_web , null);
-//        ViewUtils.inject(this, contentView);
 
         webView = (HtmlWebViewExt) contentView.findViewById(R.id.fragment_webview);
 

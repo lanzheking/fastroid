@@ -4,6 +4,9 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+/**
+ * 软件盘工具类
+ */
 public class InputMethodUtil {
 	
 	/**

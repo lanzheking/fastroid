@@ -1,22 +1,22 @@
 package com.honestwalker.androidutils.ImageSelector;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.view.View;
 import android.widget.Button;
 
 import com.honestwalker.android.fastroid.R;
 import com.honestwalker.androidutils.IO.LogCat;
+import com.honestwalker.androidutils.ImageSelector.BusEvent.ImageSelectorCancelEvent;
 import com.honestwalker.androidutils.equipment.DisplayUtil;
 import com.honestwalker.androidutils.views.DialogPage;
 
 import java.util.ArrayList;
 
+import xiaofei.library.hermeseventbus.HermesEventBus;
+
 /**
- * Depiction:
- * <p/>
- * Auth         :  zhe.lan@honestwalker.com <br />
- * Add Date     :  16-3-2 下午4:51. <br />
- * Rewrite Date :  16-3-2 下午4:51. <br />
+ *   选择拍照或图片对话框
  */
 public class ImageSelectorDialogPage extends DialogPage {
 
@@ -27,7 +27,11 @@ public class ImageSelectorDialogPage extends DialogPage {
 
     private String outputCachePath;
 
-    private ImageSelectListener listener;
+//    private ImageSelectListener listener;
+
+    private DialogInterface.OnDismissListener onDismissListener;
+
+    private DialogInterface.OnCancelListener onCancelListener;
 
     /** 设定剪切比例宽 */
     private int aspectX;
@@ -45,7 +49,7 @@ public class ImageSelectorDialogPage extends DialogPage {
      * @param outputCachePath 输出缓存文件名，剪切需要它 ， 要包含文件名
      */
     public ImageSelectorDialogPage(Activity context , String outputCachePath) {
-        this(context , outputCachePath , true , 512 , 1 , 1);
+        this(context , outputCachePath , false , 512 , 1 , 1);
     }
 
     public ImageSelectorDialogPage(Activity context , String outputCachePath ,
@@ -69,48 +73,62 @@ public class ImageSelectorDialogPage extends DialogPage {
 
     @Override
     protected void initView() {
-        LogCat.d("ddddd" , "initview");
         cameraBTN = (Button) findViewById(R.id.topBTN);
         imageBTN  = (Button) findViewById(R.id.bottomBTN);
         setTitleVisible(false);
         getDialog().setCancelable(true);
         getDialog().setCanceledOnTouchOutside(true);
         imageSelector = new ImageSelector(context);
-        imageSelector.setImageSelectListener(new ImageSelectListener() {
-            @Override
-            public void onSelect() {
-                if (listener != null) {
-                    listener.onSelect();
-                }
-            }
 
-            @Override
-            public void onSelected(ImageSelectType type, ArrayList<String> imagePath) {
-                if (listener != null) {
-                    listener.onSelected(type, imagePath);
-                }
-            }
+//        imageSelector.setImageSelectListener(new ImageSelectListener() {
+//            @Override
+//            public void onSelect() {
+//                if (listener != null) {
+//                    listener.onSelect();
+//                }
+//            }
+//
+//            @Override
+//            public void onSelected(ImageSelectType type, ArrayList<String> imagePath) {
+//                LogCat.d("FILE", "onSelected 1");
+//                if (listener != null) {
+//                    listener.onSelected(type, imagePath);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                if (listener != null) {
+//                    listener.onCancel();
+//                }
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//                if (listener != null) {
+//                    listener.onComplete();
+//                }
+//            }
+//        });
 
-            @Override
-            public void onCancel() {
-                if (listener != null) {
-                    listener.onCancel();
-                }
-            }
-
-            @Override
-            public void onComplete() {
-                if (listener != null) {
-                    listener.onComplete();
-                }
-            }
-        });
     }
 
     @Override
     protected void displayContent() {
         cameraBTN.setOnClickListener(btnOnClickListener);
         imageBTN.setOnClickListener(btnOnClickListener);
+
+        getDialog().setOnDismissListener(onDismissListener);
+//        getDialog().setOnCancelListener(onCancelListener);
+
+        getDialog().setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                ImageSelectorCancelEvent cancelEvent = new ImageSelectorCancelEvent();
+                HermesEventBus.getDefault().post(cancelEvent);
+            }
+        });
+
     }
 
     private View.OnClickListener btnOnClickListener = new View.OnClickListener() {
@@ -125,7 +143,7 @@ public class ImageSelectorDialogPage extends DialogPage {
 
             } else if(v.getId() == R.id.bottomBTN) {
                 if(needCut) {
-                    imageSelector.selectImageAndCrop(outputCachePath , aspectX , aspectY);
+                    imageSelector.selectImageAndCrop(outputCachePath , ImageSelectorDialogPage.this.maxWidth, aspectX , aspectY);
                 } else {
                     imageSelector.selectImage();
                 }
@@ -134,8 +152,28 @@ public class ImageSelectorDialogPage extends DialogPage {
         }
     };
 
-    public void setImageSelectorListener(ImageSelectListener listener) {
-        this.listener = listener;
+//    public void setImageSelectorListener(ImageSelectListener listener) {
+//        this.listener = listener;
+//    }
+//
+//    public ImageSelectListener getImageSelectorListener() {
+//        return this.listener;
+//    }
+
+    public ImageSelector getImageSelector() {
+        return this.imageSelector;
+    }
+
+//    public void setOnDismissListener(DialogInterface.OnDismissListener onDismissListener) {
+//        this.onDismissListener = onDismissListener;
+//    }
+
+//    public void setOnCancelListener(DialogInterface.OnCancelListener onCancelListener) {
+//        this.onCancelListener = onCancelListener;
+//    }
+
+    public void onDestroy() {
+        imageSelector.unRegisterEvent();
     }
 
 }

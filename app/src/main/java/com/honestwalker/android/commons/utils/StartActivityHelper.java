@@ -21,7 +21,7 @@ public class StartActivityHelper {
 	public static final int ANIM_DOWN_TO_UP_SIMPLE = 10;
 	public static final int ANIM_UP_TO_DOWN_SIMPLE = 11;
 	
-	public static void toActivity(Activity context, Class descActivityClass) {
+	public static void toActivity(Context context, Class descActivityClass) {
 		Intent intent = new Intent(context, descActivityClass);
 		onActivityChange(context, intent , 0);
 		context.startActivity(intent);
@@ -29,7 +29,7 @@ public class StartActivityHelper {
 		gc();
 	}
 
-	public static void toActivity(Activity context, Class descActivityClass, Intent intent) {
+	public static void toActivity(Context context, Class descActivityClass, Intent intent) {
 		intent.setClass(context, descActivityClass);
 		onActivityChange(context, intent , 0);
 		context.startActivity(intent);
@@ -37,7 +37,7 @@ public class StartActivityHelper {
 		gc();
 	}
 
-	public static void toActivity(Activity context, Class descActivityClass, int animCode) {
+	public static void toActivity(Context context, Class descActivityClass, int animCode) {
 		Intent intent = new Intent(context, descActivityClass);
 		onActivityChange(context, intent , animCode);
 		context.startActivity(intent);
@@ -45,7 +45,7 @@ public class StartActivityHelper {
 		gc();
 	}
 
-	public static void toActivity(Activity context, Class descActivityClass, Bundle data, int animCode) {
+	public static void toActivity(Context context, Class descActivityClass, Bundle data, int animCode) {
 		Intent intent = new Intent(context, descActivityClass);
 		onActivityChange(context, intent , animCode);
 		intent.putExtras(data);
@@ -54,14 +54,14 @@ public class StartActivityHelper {
 		gc();
 	}
 
-	public static void toActivity(Activity context, Class descActivityClass, Intent intent, int animCode) {
+	public static void toActivity(Context context, Class descActivityClass, Intent intent, int animCode) {
 		intent.setClass(context, descActivityClass);
 		onActivityChange(context, intent , animCode);
 		context.startActivity(intent);
 		activityAnim(context, intent , animCode);
 		gc();
 	}
-	
+
 	public static void toActivityForResult(Activity context,Class descActivityClass,int requestCode) {
 		Intent intent = new Intent(context, descActivityClass);
 		onActivityChange(context, intent , 0);
@@ -103,7 +103,7 @@ public class StartActivityHelper {
 		gc();
 	}
 	
-	public static void onActivityChange(Activity context , Intent intent , int animCode) {
+	public static void onActivityChange(Context context , Intent intent , int animCode) {
 		if(intent != null) {
 			intent.putExtra("backAnimCode", getExitAnimCode(animCode));
 			intent.putExtra("lastActivityClass", context.getClass());
@@ -152,8 +152,8 @@ public class StartActivityHelper {
 	/**
 	 * 推拉效果动画
 	 */
-	public static void activityAnim( Activity context , Intent intent, int animCode) {
-		if(animCode == 0) {
+	public static void activityAnim(Context context , Intent intent, int animCode) {
+		if(animCode == 0 || !(context instanceof Activity)) {
 			return;
 		}
 		saveCurrentAnim(context , animCode);
@@ -207,7 +207,7 @@ public class StartActivityHelper {
 				exitAnim = R.anim.common_anim_hidden;
 			} break;
 		}
-		context.overridePendingTransition(enterAnim , exitAnim);
+		((Activity)context).overridePendingTransition(enterAnim , exitAnim);
 	}
 	
 	public static void gc() {

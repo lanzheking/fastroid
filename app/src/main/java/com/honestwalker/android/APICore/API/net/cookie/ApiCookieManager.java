@@ -33,28 +33,18 @@ public class ApiCookieManager {
 		
 		List<Cookie> cookies = getCookies(httpClient);
 		
-//		ArrayList<CookieSerializable> cookieSerializables = new ArrayList<CookieSerializable>();
 		HashMap<String, String> cookieMap = null;
 		try {
 			cookieMap = (HashMap<String, String>) ObjectStreamIO.input(context.getFilesDir().getAbsolutePath(), cookieFileName);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		//HashMap<String, String> cookieMap = new HashMap<String , String>();
 
 		if(cookies != null && cookies.size() > 0) {
 			for(Cookie cookie : cookies) {
-//				cookieSerializables.add(new CookieSerializable(cookie.getName(), cookie.getValue()));
 				cookieMap.put(cookie.getName(), cookie.getValue());
-
-//				cookieMap.put("domain", cookie.getDomain());
-//				cookieMap.put("path", cookie.getPath());
-//				Date date = cookie.getExpiryDate();
-//				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-//				LogCat.d("cookie", "================>" + sdf.format(date));
 			}
 			ObjectStreamIO.output(context.getFilesDir().getAbsolutePath(), cookieMap, cookieFileName);
-			//ObjectStreamIO.output(context.getCacheDir().toString(), cookieMap, cookieFileName);
 			LogCat.d("REQUEST", "\r\n[SAVE COOKIE]:" + ApiCookieManager.getHttpClientCookie(httpClient) + "\r\n");
 		} else {
 			LogCat.d("REQUEST", "cookie 为 空 不保存");
@@ -71,16 +61,12 @@ public class ApiCookieManager {
 		String[] cookiearray ;
 		cookiearray = string.split(";");
 
-		//List<Cookie> cookies = getCookies(httpClient);
-
-//		ArrayList<CookieSerializable> cookieSerializables = new ArrayList<CookieSerializable>();
 		HashMap<String, String> cookieMap = null;
 		try {
 			cookieMap = (HashMap<String, String>) ObjectStreamIO.input(context.getFilesDir().getAbsolutePath(), cookieFileName);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		//HashMap<String, String> cookieMap = new HashMap<String , String>();
 
 		for (int i = 0 ;i<cookiearray.length;i++){
 			String cookieStr = cookiearray[i];
@@ -89,26 +75,8 @@ public class ApiCookieManager {
 				cookieMap.put(cookieStr.substring(0, index), cookieStr.substring(index + 1));
 			}
 
-			//Log.i("YU", "cookiename" + cookieStr.substring(0, index) + " value " + cookieStr.substring(index + 1));
-
 		}
 		ObjectStreamIO.output(context.getFilesDir().getAbsolutePath(), cookieMap, cookieFileName);
-		LogCat.i("apicookie","apicookie sync success");
-		/*if(cookiearray != null && cookiearray.length > 0) {
-			for(String cookie : cookiearray) {
-//				cookieSerializables.add(new CookieSerializable(cookie.getName(), cookie.getValue()));
-				//cookieMap.put(cookie.getName(), cookie.getValue());
-//				cookieMap.put("domain", cookie.getDomain());
-//				cookieMap.put("path", cookie.getPath());
-//				Date date = cookie.getExpiryDate();
-//				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-//				LogCat.d("cookie", "================>" + sdf.format(date));
-			}
-			ObjectStreamIO.output(context.getCacheDir().toString(), cookieMap, cookieFileName);
-			//LogCat.d("REQUEST", "\r\n[SAVE COOKIE]:" + ApiCookieManager.getHttpClientCookie(httpClient) + "\r\n");
-		} else {
-			LogCat.d("REQUEST", "cookie 为 空 不保存");
-		}*/
 
 	}
 
@@ -138,11 +106,9 @@ public class ApiCookieManager {
 				Map.Entry<String,String> ent = iter.next();
 				cookieStr.append(ent.getKey() + "=" + ent.getValue() + ";");
 			}
-			LogCat.d("COOKIE", cookieStr.toString());
 			return cookieStr.toString();
 		} catch (Exception e) {
 		}
-		LogCat.d("COOKIE", "本地cookie不存在。");
 		return "";
 	}
 	
@@ -153,7 +119,7 @@ public class ApiCookieManager {
 	 */
 	public static String getHttpClientCookie(DefaultHttpClient httpClient) {
 		StringBuffer sb = new StringBuffer();
-		{	// cookie
+		{
 			CookieStore cookieStore = httpClient.getCookieStore();
 			List<Cookie> cookies = cookieStore.getCookies();
 			if(cookies != null && cookies.size() > 0) {
@@ -179,9 +145,7 @@ public class ApiCookieManager {
 			if(cookieMap == null) {
 				return null;
 			}
-//			CookieStore cookieStore = httpClient.getCookieStore();
-//			cookieStore.clear();
-			
+
 			Iterator<Map.Entry<String, String>> iter = cookieMap.entrySet().iterator();
 			StringBuffer cookieStr = new StringBuffer();
 			while(iter.hasNext()) {
@@ -192,7 +156,7 @@ public class ApiCookieManager {
 			httpRequest.addHeader("Cookie", cookieStr.toString());
 
 			LogCat.d("REQUEST", "\r\n[SET COOKIE]" + cookieStr.toString());
-			
+
 			return cookieStr.toString();
 		} catch (Exception e) {
 		}
@@ -206,8 +170,6 @@ public class ApiCookieManager {
 			if(cookieMap == null) {
 				return null;
 			}
-//			CookieStore cookieStore = httpClient.getCookieStore();
-//			cookieStore.clear();
 
 			Iterator<Map.Entry<String, String>> iter = cookieMap.entrySet().iterator();
 			StringBuffer cookieStr = new StringBuffer();
@@ -232,7 +194,6 @@ public class ApiCookieManager {
 	private synchronized static String showCookiesInCookieStore(CookieStore cookieStore) {
 		StringBuffer cookieSB = new StringBuffer();
 		for(Cookie c : cookieStore.getCookies()) {
-//			LogCat.d("COOKIE", c.getName() + "=" + c.getValue() + "  ");
 			cookieSB.append(c.getName() + "=" + c.getValue() + ";");
 		}
 		return cookieSB.toString();
@@ -244,7 +205,6 @@ public class ApiCookieManager {
 	 * @return
 	 */
 	private synchronized static List<Cookie> getCookies(DefaultHttpClient httpClient) {
-		LogCat.d("COOKIE", "httpclient.getcookies == 0 " + httpClient.getCookieStore().getCookies().size());
 		return httpClient.getCookieStore().getCookies();
 	}
 
@@ -254,8 +214,6 @@ public class ApiCookieManager {
 			if(cookieMap == null) {
 				return null;
 			}
-//			CookieStore cookieStore = httpClient.getCookieStore();
-//			cookieStore.clear();
 
 			Iterator<Map.Entry<String, String>> iter = cookieMap.entrySet().iterator();
 			StringBuffer cookieStr = new StringBuffer();

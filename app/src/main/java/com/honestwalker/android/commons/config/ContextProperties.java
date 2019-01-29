@@ -1,9 +1,11 @@
 package com.honestwalker.android.commons.config;
 
 /**
+ * 程序主配置对象封装
  * Created by honestwalker on 15-4-23.
  */
 public class ContextProperties {
+
     private static ContextProperties config;
 
     public static ContextProperties getConfig() {

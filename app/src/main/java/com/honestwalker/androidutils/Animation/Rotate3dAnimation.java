@@ -5,7 +5,11 @@ import android.graphics.Matrix;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
-public class Rotate3dAnimation extends Animation {  
+/**
+ * 3d旋转动画
+ */
+public class Rotate3dAnimation extends Animation {
+
 		    //开始角度  
 		    private final float mFromDegrees;  
 		    //结束角度  
@@ -17,7 +21,8 @@ public class Rotate3dAnimation extends Animation {
 		    //是否需要扭曲  
 		    private final boolean mReverse;  
 		    //摄像头  
-		    private Camera mCamera;  
+		    private Camera mCamera;
+
 		    public Rotate3dAnimation(float fromDegrees, float toDegrees,  
 		            float centerX, float centerY, float depthZ, boolean reverse) {  
 		        mFromDegrees = fromDegrees;  

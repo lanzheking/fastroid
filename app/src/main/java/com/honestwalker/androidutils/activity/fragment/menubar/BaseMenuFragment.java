@@ -3,6 +3,9 @@ package com.honestwalker.androidutils.activity.fragment.menubar;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 
+/**
+ * 菜单fragment的父类
+ */
 public class BaseMenuFragment extends Fragment {
 	
 	protected Activity context;

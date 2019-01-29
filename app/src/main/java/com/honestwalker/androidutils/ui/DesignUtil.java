@@ -9,7 +9,6 @@ import com.honestwalker.androidutils.equipment.DisplayUtil;
  * <p/>
  * Auth         :  zhe.lan@honestwalker.com <br />
  * Add Date     :  16-2-19 上午10:10. <br />
- * Rewrite Date :  16-2-19 上午10:10. <br />
  */
 public class DesignUtil {
 

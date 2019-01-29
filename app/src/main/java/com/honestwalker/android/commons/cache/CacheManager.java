@@ -3,13 +3,11 @@ package com.honestwalker.android.commons.cache;
 import android.content.Context;
 
 import com.honestwalker.android.commons.config.ContextProperties;
-import com.honestwalker.android.commons.db.DatabaseIO;
 import com.honestwalker.androidutils.IO.ObjectStreamIO;
 import com.honestwalker.androidutils.IO.SharedPreferencesLoader;
 import com.honestwalker.androidutils.exception.ExceptionUtil;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by honestwalker on 15-11-9.
@@ -87,16 +85,17 @@ public class CacheManager<T> {
     public T get(Context context) {
 
         if (CacheType.DataBase.equals(cacheType)) {
-            List<?> list = DatabaseIO.getInstance(context).queryAll(clazz);
-            if (list != null && list.size() != 0) {
-                try {
-                    return (T) list;
-                }catch (ClassCastException e){
-                    return (T)list.get(0);
-                }
-            }else {
-                return null;
-            }
+//            List<?> list = DatabaseIO.getInstance(context).queryAll(clazz);
+//            if (list != null && list.size() != 0) {
+//                try {
+//                    return (T) list;
+//                }catch (ClassCastException e){
+//                    return (T)list.get(0);
+//                }
+//            }else {
+//                return null;
+//            }
+            return null;
         } else {
             return get();
         }
@@ -109,19 +108,19 @@ public class CacheManager<T> {
     public void set(Context context, T t) {
 
         if (CacheType.DataBase.equals(cacheType)) {
-            if (t != null) {
-                if (t instanceof List) {
-                    DatabaseIO.getInstance(context).deleteAll(clazz);
-                    DatabaseIO.getInstance(context).saveAll((List<?>) t);
-                }else {
-                    if (DatabaseIO.getInstance(context).queryAll(clazz) != null) {
-                        DatabaseIO.getInstance(context).deleteAll(clazz);
-                    }
-                    DatabaseIO.getInstance(context).save(t);
-                }
-            }else {
-                DatabaseIO.getInstance(context).deleteAll(clazz);
-            }
+//            if (t != null) {
+//                if (t instanceof List) {
+//                    DatabaseIO.getInstance(context).deleteAll(clazz);
+//                    DatabaseIO.getInstance(context).saveAll((List<?>) t);
+//                }else {
+//                    if (DatabaseIO.getInstance(context).queryAll(clazz) != null) {
+//                        DatabaseIO.getInstance(context).deleteAll(clazz);
+//                    }
+//                    DatabaseIO.getInstance(context).save(t);
+//                }
+//            }else {
+//                DatabaseIO.getInstance(context).deleteAll(clazz);
+//            }
         } else {
             set(t);
         }

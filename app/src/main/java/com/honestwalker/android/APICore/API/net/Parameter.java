@@ -148,7 +148,6 @@ public class Parameter {
 
         if (true) {
             try {
-                LogCat.d("TEST" , "appkey=" + appKey + "appSecret=" + appSecret);
                 appKey = AES.encrypt(appKey, appSecret).toLowerCase();
             } catch (InvalidKeyException e2) {
             }
@@ -157,9 +156,6 @@ public class Parameter {
         put("app_key", appKey);
 
         LogCat.d("REQUEST", "\r\n");
-//		for (NameValuePair nvp : paramList) {
-//			LogCat.d("REQUEST", nvp.getName() + "=" + nvp.getValue());
-//		}
         return paramList;
 
     }
@@ -181,9 +177,7 @@ public class Parameter {
             }
         }
 
-//		buf.append(appSecret);
         buf.append(appSecret);
-        LogCat.d("TEST", "SIGN KV = " + buf.toString());
 
         String md5Sign = "";
         try {

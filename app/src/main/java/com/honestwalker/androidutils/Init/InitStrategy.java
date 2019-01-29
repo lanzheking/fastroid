@@ -29,8 +29,11 @@ public class InitStrategy {
 	
 	private String currentProcessName = R.class.getPackage().getName();
 
+	private int initConfigRes;
+
 	public InitStrategy(Context context, int initConfigRes) {
 		this.context = context;
+		this.initConfigRes = initConfigRes;
 	}
 
 	/** 存放适用与当前进程的“初始化策略列表” */
@@ -66,7 +69,6 @@ public class InitStrategy {
 		
 		// 限定只有主进程才执行时，子进程略过执行
 		boolean isMainTheadOnly = strategyBean.getProcessName().endsWith(":main");
-		LogCat.d(TAG, "isMainTheadOnly=" + isMainTheadOnly);
 		if(isMainTheadOnly && currentProcessName.indexOf(":") > -1) {
 			return;
 		}
@@ -122,21 +124,20 @@ public class InitStrategy {
 	 */
 	public void execute() {
 
-		int initStrategyResId = 0;
-
-		try {
-
-			Class rClass = Class.forName(context.getPackageName() + ".R");
-			initStrategyResId = RClassUtil.getResId(rClass , "raw.init_strategy");  // 读取配置索引值
-
-		} catch (Exception e) {
-			ExceptionUtil.showException("inject" , e);
-			return;
-		}
+//		int initStrategyResId = 0;
+//		try {
+//
+//			Class rClass = Class.forName(context.getPackageName() + ".R");
+//			initStrategyResId = RClassUtil.getResId(rClass , "raw.init_strategy");  // 读取配置索引值
+//
+//		} catch (Exception e) {
+//			ExceptionUtil.showException("inject" , e);
+//			return;
+//		}
 
 		if(currencyProcessInitStrategy == null) {
 			try {
-				load(initStrategyResId);
+				load(initConfigRes);
 			} catch (Exception e) {}
 		}
 		if(currencyProcessInitStrategy != null) {

@@ -112,11 +112,6 @@ public class BlurViewPager extends ViewPager {
     @Override
 	public void setCurrentItem(int item){
 		setCurrentItem(item,!snapWhenSwitchTab);
-//        for (int i = 0; i < getChildCount(); i++) {
-//            if(getChildAt(i) != null){
-//                getChildAt(i).setAlpha(1f);
-//            }
-//        }
 	}
 	
 	

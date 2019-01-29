@@ -75,12 +75,9 @@ public class LoadingLayout extends FrameLayout {
 	}
 
 	public synchronized void reset() {
-		LogCat.d("test","1 reset  " + lastUpdateTime);
 		if(lastUpdateTime == 0) {
-			LogCat.d("test","1 ");
 			headerText.setText(pullLabel);
 		} if(System.currentTimeMillis() - lastUpdateTime < 5000) {
-			LogCat.d("test","2 lastUpdateTime=" + lastUpdateTime);
 			Date d = new Date(lastUpdateTime);
 			if(showLastUpdateTime) {
 				headerText.setText(pullLabel + "\r\n" + lastUpdateTimeLabel + "：" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
@@ -105,7 +102,6 @@ public class LoadingLayout extends FrameLayout {
 	}
 
 	public void releaseToRefresh() {
-		LogCat.d("test","releaseToRefresh");
 		headerText.setText(releaseLabel);
 		headerImage.clearAnimation();
 		headerImage.startAnimation(rotateAnimation);
@@ -116,7 +112,6 @@ public class LoadingLayout extends FrameLayout {
 	}
 
 	public void refreshing() {
-		LogCat.d("test","refreshing");
 		headerText.setText(refreshingLabel);
 		headerImage.clearAnimation();
 		headerImage.setVisibility(View.INVISIBLE);
@@ -133,7 +128,6 @@ public class LoadingLayout extends FrameLayout {
 	}
 
 	public void pullToRefresh() {
-		LogCat.d("test","pullToRefresh");
 		headerText.setText(pullLabel);
 		headerImage.clearAnimation();
 		headerImage.startAnimation(resetRotateAnimation);

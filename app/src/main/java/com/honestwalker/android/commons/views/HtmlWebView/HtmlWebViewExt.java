@@ -1,17 +1,26 @@
 package com.honestwalker.android.commons.views.HtmlWebView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
+import android.webkit.DownloadListener;
+import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
+import com.honestwalker.android.commons.bean.JSParam;
+import com.honestwalker.android.BusEvent.event.WebPageFinishedEvent;
 import com.honestwalker.android.fastroid.R;
 import com.honestwalker.androidutils.IO.LogCat;
+import com.honestwalker.androidutils.UIHandler;
 import com.honestwalker.androidutils.ViewUtils.ViewSizeHelper;
 import com.honestwalker.androidutils.views.BaseMyViewRelativeLayout;
+
+import xiaofei.library.hermeseventbus.HermesEventBus;
 
 /**
  * Created by honestwalker on 15-7-22.
@@ -53,6 +62,7 @@ public class HtmlWebViewExt extends BaseMyViewRelativeLayout {
         return webView.getSettings();
     }
 
+    private boolean networkRetryLock = false;
     private void initView() {
         contentView = inflate(context , R.layout.view_htmlwebviewext , this);
         networkErrorIV = (ImageView) contentView.findViewById(R.id.network_err_iv);
@@ -60,19 +70,32 @@ public class HtmlWebViewExt extends BaseMyViewRelativeLayout {
         ViewSizeHelper.getInstance(context).setSize(networkErrorIV , networkErrorIVWidth , networkErrorIVWidth);
         networkErrorView = contentView.findViewById(R.id.network_err_layout);
         webView = (HtmlWebView) contentView.findViewById(R.id.htmlwebview);
-        webView.setHtmlWebViewCallback(htmlWebViewCallback);
+//        webView.setHtmlWebViewCallback(htmlWebViewCallback);
         networkErrorView.setClickable(true);
         networkErrorView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(networkRetryLock) return;
+
                 webView.loadUrl(url);
-                hasError = false;
+
+                networkRetryLock = true;
+                UIHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        networkRetryLock = false;
+                    }
+                }, 2000);
+
                 LogCat.d(TAG, "重试");
                 if(mHtmlWebViewCallback != null) {
                     mHtmlWebViewCallback.onNetworkErrorRetry(webView , url);
                 }
             }
         });
+
+        webView.setDownloadListener(downloadListener);
+
 //        networkErrorView.setOnTouchListener(new OnTouchListener() {
 //            @Override
 //            public boolean onTouch(View v, MotionEvent event) {
@@ -95,6 +118,13 @@ public class HtmlWebViewExt extends BaseMyViewRelativeLayout {
         this.url = url;
         networkErrorView.setVisibility(View.GONE);
         webView.loadUrl(url);
+
+    }
+
+    public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
+        this.url = baseUrl;
+        networkErrorView.setVisibility(View.GONE);
+        webView.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
     }
 
     public void reload() {
@@ -128,6 +158,8 @@ public class HtmlWebViewExt extends BaseMyViewRelativeLayout {
             if(!hasError) {
                 networkErrorView.setVisibility(View.GONE);
             }
+            hasError = false;
+            HermesEventBus.getDefault().post(new WebPageFinishedEvent(webView, url));
         }
 
         @Override
@@ -137,11 +169,20 @@ public class HtmlWebViewExt extends BaseMyViewRelativeLayout {
                 mHtmlWebViewCallback.onReceivedError(view, errorCode, description, failingUrl);
             }
             hasError = true;
-//            networkErrorView.setVisibility(View.VISIBLE);
+            networkErrorView.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onNetworkErrorRetry(WebView view, String url) {}
+    };
+
+    private DownloadListener downloadListener = new DownloadListener() {
+        @Override
+        public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+            Uri uri=Uri.parse(url);
+            Intent intent=new Intent(Intent.ACTION_VIEW, uri);
+            getContext().startActivity(intent);
+        }
     };
 
     public void setHtmlWebViewCallback(HtmlWebViewCallback htmlWebViewCallback) {
@@ -156,6 +197,34 @@ public class HtmlWebViewExt extends BaseMyViewRelativeLayout {
         return webView.getUrl();
     }
 
+//    /**
+//     * 开启js callback
+//     * @param applicationId
+//     */
+//    public void enableJsCallback(String applicationId) {
+//        webView.enableJsCallback(applicationId);
+//    }
+
+    public void setUserAgent(String userAgent) {
+        webView.setUserAgent(userAgent);
+    }
+
+    public void setHost(String webHost) {
+        webView.setHost(webHost);
+    }
+
+    public void goBack() {
+        webView.goBack();
+    }
+
+    public void resetFileChoose() {
+        webView.resetFileChoose();
+    }
+
+    public ValueCallback getmUploadMessage() {
+        return webView.getmUploadMessage();
+    }
+
 //    public void setOnWebloadListener(OnWebloadListener onWebloadListener) {
 //        this.onWebloadListener = onWebloadListener;
 //    }
@@ -168,6 +237,18 @@ public class HtmlWebViewExt extends BaseMyViewRelativeLayout {
 
     public void addJavascriptInterface(Object obj, String interfaceName) {
         webView.addJavascriptInterface(obj , interfaceName);
+    }
+
+//    public void addInterceptRequest(InterceptRequest interceptRequest) {
+//        webView.addInterceptRequest(interceptRequest);
+//    }
+
+    public void execJS(String method) {
+        execJS(method, null);
+    }
+
+    public void execJS(String method, JSParam paramKVMap) {
+        webView.execJS(method, paramKVMap);
     }
 
 }

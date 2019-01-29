@@ -3,6 +3,7 @@ package com.honestwalker.androidutils.views;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
@@ -149,4 +150,21 @@ public abstract class DialogPage {
 	public View getContentView() {
 		return contentView;
 	}
+
+	public void setCancelAble(boolean cancelAble) {
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    return true;
+                }
+                else {
+                    return false; //默认返回 false
+                }
+            }
+        });
+    }
+
 }

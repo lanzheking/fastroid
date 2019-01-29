@@ -6,12 +6,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera.Size;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.widget.ImageView;
 
 import com.honestwalker.androidutils.IO.LogCat;
@@ -20,7 +24,53 @@ import com.honestwalker.androidutils.exception.ExceptionUtil;
 
 
 public class ImageUtil {
-	
+
+	/**
+	 * 图片path转uri
+	 * @param context
+	 * @param imagePath  图片路径
+	 * @return
+	 */
+	public static Uri getImageContentUri(Context context, String imagePath) {
+		File imageFile = new File(imagePath);
+		if(!imageFile.exists()) {
+			return null;
+		} else {
+			return getImageContentUri(context, new File(imagePath));
+		}
+	}
+
+	/**
+	 * 图片file转uri
+	 * @param context
+	 * @param imageFile
+	 * @return
+	 */
+	public static Uri getImageContentUri(Context context, java.io.File imageFile) {
+		if(!imageFile.exists()) return null;
+		String filePath = imageFile.getAbsolutePath();
+		Cursor cursor = context.getContentResolver().query(
+				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+				new String[] { MediaStore.Images.Media._ID },
+				MediaStore.Images.Media.DATA + "=? ",
+				new String[] { filePath }, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			int id = cursor.getInt(cursor
+					.getColumnIndex(MediaStore.MediaColumns._ID));
+			Uri baseUri = Uri.parse("content://media/external/images/media");
+			return Uri.withAppendedPath(baseUri, "" + id);
+		} else {
+			if (imageFile.exists()) {
+				ContentValues values = new ContentValues();
+				values.put(MediaStore.Images.Media.DATA, filePath);
+				return context.getContentResolver().insert(
+						MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+			} else {
+				return null;
+			}
+		}
+	}
+
 	public static void rotateImg(Context context,ImageView iv,int angle,int resId){
 		Bitmap bitmapOrg = BitmapFactory.decodeResource(context.getResources(),resId);
 		int width = bitmapOrg.getWidth();
@@ -89,11 +139,12 @@ public class ImageUtil {
 		return null;
 	}
 	
-	public String imageZip(String imagePath , int maxWidth) {
+	public String imageZip(String imagePath , int maxWidth, int quality) {
 		try {
 			Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-//			bitmap = bitmapZip(bitmap,  maxWidth);
-			bitmapToFile(imagePath, bitmap, 100, maxWidth);
+			if(bitmap.getWidth() > maxWidth) {
+				bitmapToFile(imagePath, bitmap, quality, maxWidth);
+			}
 		} catch (Exception e) {
 			ExceptionUtil.showException(e);
 		}
@@ -108,11 +159,13 @@ public class ImageUtil {
 	 */
 	public static Bitmap bitmapZip(Bitmap bitmap , int newWidthPx) {
 		try {
-			int w = bitmap.getWidth();
-			int h = bitmap.getHeight();
-			int newW = newWidthPx;
-			int newH = (newWidthPx * h) / w;
-			bitmap = Bitmap.createScaledBitmap(bitmap, newW, newH, false);
+			if(bitmap.getWidth() > newWidthPx) {
+				int w = bitmap.getWidth();
+				int h = bitmap.getHeight();
+				int newW = newWidthPx;
+				int newH = (newWidthPx * h) / w;
+				bitmap = Bitmap.createScaledBitmap(bitmap, newW, newH, false);
+			}
 		} catch (Exception e) {
 		}
     	return bitmap;

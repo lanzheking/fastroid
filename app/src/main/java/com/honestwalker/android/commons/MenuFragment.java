@@ -16,6 +16,7 @@ import com.honestwalker.androidutils.activity.fragment.menubar.MenubarItemBean;
 import java.util.ArrayList;
 
 /**
+ * 菜单页面fragment
  * Created by honestwalker on 15-12-9.
  */
 public abstract class MenuFragment extends BaseTabIconFragment implements IMenuContext {

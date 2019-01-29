@@ -10,14 +10,23 @@ import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.MediaStore;
 
 import com.honestwalker.androidutils.DES;
 import com.honestwalker.androidutils.ImageConvert;
 import com.honestwalker.androidutils.exception.ExceptionUtil;
+import com.honestwalker.androidutils.pool.ThreadPool;
 
+/**
+ * 图片缓存工具
+ */
 public class ImageCacheUtil {
 	
 	 /**
@@ -191,5 +200,33 @@ public class ImageCacheUtil {
     public static void saveDrawable(String path,Drawable drawable) {
     	saveDrawable(new File(path), drawable);
     }
-    
+
+    /**
+     * 删除图片方法，删除图片要同时删除uri
+     * @param imgPath
+     */
+    public static void deleteImage(final Context context, final String imgPath) {
+        ThreadPool.threadPool(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ContentResolver resolver = context.getContentResolver();
+                    Cursor cursor = MediaStore.Images.Media.query(resolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[] { MediaStore.Images.Media._ID }, MediaStore.Images.Media.DATA + "=?",
+                            new String[] { imgPath }, null);
+                    if (cursor.moveToFirst()) {
+                        long id = cursor.getLong(0);
+                        Uri contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                        Uri uri = ContentUris.withAppendedId(contentUri, id);
+                        context.getContentResolver().delete(uri, null, null);
+                    } else {
+                        try {
+                            File file = new File(imgPath);
+                            file.delete();
+                        } catch (Exception e) {}
+                    }
+                } catch (Exception e) {}
+            }
+        });
+    }
+
 }

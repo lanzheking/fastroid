@@ -116,9 +116,9 @@ public abstract class MenubarFragmentActivity<TUser> extends FragmentActivity {
 		}
 		
 		fragmentManager = getSupportFragmentManager(); 
-	   fragmentTransaction = fragmentManager.beginTransaction();  
+	    fragmentTransaction = fragmentManager.beginTransaction();
 		   
-	   fragmentTransaction.add(R.id.frame_layout, mFragments[0]).show(mFragments[0]).commit();;
+	    fragmentTransaction.add(R.id.frame_layout, mFragments[0]).show(mFragments[0]).commit();;
 		menubarLayout.setMenubarBean(menubarBean);
 		
 		menubarLayout.initMenubarLayout(this);
@@ -186,25 +186,13 @@ public abstract class MenubarFragmentActivity<TUser> extends FragmentActivity {
 				}
 			}
 			
-//			if(item.getAttribute("label") != null) {
-//				text    = item.getAttribute("label").getValue();
-//				if(text == null) text = "";
-//				if(text.startsWith("@string/")) {	// 如果是引用字符串解析R文件获取字符串
-//					try {
-//						int textResId = RClassUtil.getStringResIdByName(RClass, text);
-//						text = context.getResources().getString(textResId);
-//					} catch (Exception e) {
-//						text = "";
-//					}
-//				}
-//			}
 		}
 		
-		addMenuItem(index , id, label, labelColorResId , iconResId , fragmentClass);
+//		addMenuItem(index , id, label, labelColorResId , iconResId , fragmentClass);
 		
 	}
 	
-	/**
+	/*
 	 * 页面创建
 	 * @param index
 	 * @param id
@@ -212,7 +200,7 @@ public abstract class MenubarFragmentActivity<TUser> extends FragmentActivity {
 	 * @param iconResId
 	 * @param targetClass
 	 */
-	private void addMenuItem(int index , String id , String label , int labelColorResId , int iconResId , String targetClass) {
+//	private void addMenuItem(int index , String id , String label , int labelColorResId , int iconResId , String targetClass) {
 //		menuItems[index] = new MenubarItemBean();
 //		MenubarItemBean menubarItemBean = menuItems[index];
 //		menubarItemBean.setId(id);
@@ -221,7 +209,7 @@ public abstract class MenubarFragmentActivity<TUser> extends FragmentActivity {
 //		menubarItemBean.setTargetClass(targetClass);
 //		menubarItemBean.setLabelColorResId(labelColorResId);
 //		mFragments[index] = Fragment.instantiate(this, fragmentClass);
-	}
+//	}
 	
 	/**
 	 * 切换页面主体

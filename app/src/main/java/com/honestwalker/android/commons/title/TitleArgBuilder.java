@@ -41,7 +41,6 @@ public class TitleArgBuilder {
 		titleArg.setIsTitleBarVisible(true);
 		titleArg.setTitleTVStr(titleStr);
 		titleArg.setLeftBackVisible(true);
-		titleArg.setLeftBackClickListener(context.backBtnClick);
 
 		return titleArg;
 	}
@@ -55,7 +54,6 @@ public class TitleArgBuilder {
 		titleArg.setIsTitleBarVisible(true);
 		titleArg.setTitleTVStr(titleStr);
 		titleArg.setLeftBackVisible(true);
-		titleArg.setLeftBackClickListener(context.backBtnClick);
 		titleArg.setRightBtnVisible(true);
 		titleArg.setRightBtnClickListener(titleRightBtnClick);
 		titleArg.setRightBtnStr(titleRightBtnStr);
@@ -70,7 +68,6 @@ public class TitleArgBuilder {
 		titleArg.setIsTitleBarVisible(true);
 		titleArg.setTitleTVStr(titleStr);
 		titleArg.setLeftBackVisible(true);
-		titleArg.setLeftBackClickListener(context.backBtnClick);
 		titleArg.setRightBtnVisible(true);
 		titleArg.setRightBtnClickListener(titleRightBtnClick);
 		titleArg.setRightIconRes(rightIconRes);

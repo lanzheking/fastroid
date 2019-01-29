@@ -21,11 +21,9 @@ import android.widget.RelativeLayout;
 
 import com.honestwalker.android.fastroid.R;
 import com.honestwalker.androidutils.ViewUtils.ViewSizeHelper;
-import com.lidroid.xutils.BitmapUtils;
-import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
-import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
-import com.lidroid.xutils.bitmap.callback.DefaultBitmapLoadCallBack;
 
+import org.xutils.common.Callback;
+import org.xutils.x;
 
 /**
  * 异步圆形图片工具
@@ -36,15 +34,11 @@ public class AsyncCircleImageView extends RelativeLayout {
 	
 	private CircleImageView imageView;
 	private ProgressBar progressBar;
-	private BitmapUtils bitmapUtils;
 	public CircleImageView getImageView() {
 		return imageView;
 	}
 	public ProgressBar getProgressBar() {
 		return progressBar;
-	}
-	public BitmapUtils getBitmapUtils() {
-		return bitmapUtils;
 	}
 
 	public AsyncCircleImageView(Context context) {
@@ -78,12 +72,14 @@ public class AsyncCircleImageView extends RelativeLayout {
 		lp.addRule(RelativeLayout.CENTER_IN_PARENT);
 		this.addView(progressBar, lp);
 		
-		bitmapUtils = new BitmapUtils(context);
-		bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.ARGB_8888);
 	}
 
 	public void setImageBitmap(Bitmap bitmap){
 		imageView.setImageBitmap(bitmap);
+	}
+
+	public void setImageDrawable(Drawable drawable) {
+		imageView.setImageDrawable(drawable);
 	}
 
 	public void setImageBitmap(Bitmap bitmap, int width) {
@@ -92,36 +88,6 @@ public class AsyncCircleImageView extends RelativeLayout {
 		ViewSizeHelper.getInstance(context).setWidth(imageView, width);
 		ViewSizeHelper.getInstance(context).setHeight(imageView, width);
 		imageView.setImageBitmap(bitmap);
-	}
-	
-	public AsyncCircleImageView configDefaultLoadingImage(int loadingImageRes){
-		 bitmapUtils.configDefaultLoadingImage(loadingImageRes);
-	     return this;
-	}
-
-	public AsyncCircleImageView configDefaultLoadingImage(Drawable loadingImagedDrawable){
-		bitmapUtils.configDefaultLoadingImage(loadingImagedDrawable);
-		return this;
-	}
-
-	public AsyncCircleImageView configDefaultLoadingImage(Bitmap loadingImagedBitmap){
-		bitmapUtils.configDefaultLoadingImage(loadingImagedBitmap);
-		return this;
-	}
-	
-	public AsyncCircleImageView configDefaultLoadFailedImage(int loadFailedImageRes){
-		bitmapUtils.configDefaultLoadFailedImage(loadFailedImageRes);
-		return this;
-	}
-	
-	public AsyncCircleImageView configDefaultLoadFailedImage(Drawable loadFailedImageDrawable){
-		bitmapUtils.configDefaultLoadFailedImage(loadFailedImageDrawable);
-		return this;
-	}
-
-	public AsyncCircleImageView configDefaultLoadFailedImage(Bitmap loadFailedImageBitmap){
-		bitmapUtils.configDefaultLoadFailedImage(loadFailedImageBitmap);
-		return this;
 	}
 	
 	public AsyncCircleImageView setBorderWidth(int borderWidth){
@@ -134,7 +100,7 @@ public class AsyncCircleImageView extends RelativeLayout {
 		return this;
 	}
 	public void loadUrl(String imageUrl) {
-		bitmapUtils.display(new ImageView(context), imageUrl, new CustomBitmapLoadCallBack());
+		x.image().bind(new ImageView(context), imageUrl, commonCallback);
 	}
 	
 	public void loadUrl(String imageUrl, int width) {
@@ -142,18 +108,32 @@ public class AsyncCircleImageView extends RelativeLayout {
 		ViewSizeHelper.getInstance(context).setHeight(this, width);
 		ViewSizeHelper.getInstance(context).setWidth(imageView, width);
 		ViewSizeHelper.getInstance(context).setHeight(imageView, width);
-		bitmapUtils.display(new ImageView(context), imageUrl, new CustomBitmapLoadCallBack());
+		x.image().bind(new ImageView(context), imageUrl, commonCallback);
 	}
-	
-	public class CustomBitmapLoadCallBack extends DefaultBitmapLoadCallBack<ImageView> {
 
-        @Override
-        public void onLoadCompleted(ImageView container, String uri, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
-        	progressBar.setVisibility(View.GONE);
-        	setImageBitmap(bitmap);
-        }
-    }
-	
+	private Callback.CommonCallback<Drawable> commonCallback = new Callback.CommonCallback<Drawable>() {
+		@Override
+		public void onSuccess(Drawable drawable) {
+			progressBar.setVisibility(View.GONE);
+			setImageDrawable(drawable);
+		}
+
+		@Override
+		public void onError(Throwable ex, boolean isOnCallback) {
+
+		}
+
+		@Override
+		public void onCancelled(CancelledException cex) {
+
+		}
+
+		@Override
+		public void onFinished() {
+
+		}
+	};
+
 	/**
 	 * 圆形图片内部类
 	 */

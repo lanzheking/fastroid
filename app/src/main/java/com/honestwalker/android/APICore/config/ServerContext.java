@@ -1,22 +1,24 @@
 package com.honestwalker.android.APICore.config;
 
+import org.xutils.http.HttpMethod;
+
 /**
  * Created by honestwalker on 15-12-24.
  */
-public class ServerContext extends ServerContextSupport {
+public class ServerContext  {
 
-    private String method;
+    private HttpMethod method;
     private String host;
-    private String web_host;
-    private String action_key;
-    private String app_key;
-    private String app_secret;
+    private String webHost;
+    private String actionKey;
+    private String appKey;
+    private String appSecret;
 
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
-    public void setMethod(String method) {
+    public void setMethod(HttpMethod method) {
         this.method = method;
     }
 
@@ -28,35 +30,35 @@ public class ServerContext extends ServerContextSupport {
         this.host = host;
     }
 
-    public String getAction_key() {
-        return action_key;
+    public String getWebHost() {
+        return webHost;
     }
 
-    public void setAction_key(String action_key) {
-        this.action_key = action_key;
+    public void setWebHost(String webHost) {
+        this.webHost = webHost;
     }
 
-    public String getApp_key() {
-        return app_key;
+    public String getActionKey() {
+        return actionKey;
     }
 
-    public void setApp_key(String app_key) {
-        this.app_key = app_key;
+    public void setActionKey(String actionKey) {
+        this.actionKey = actionKey;
     }
 
-    public String getApp_secret() {
-        return app_secret;
+    public String getAppKey() {
+        return appKey;
     }
 
-    public void setApp_secret(String app_secret) {
-        this.app_secret = app_secret;
+    public void setAppKey(String appKey) {
+        this.appKey = appKey;
     }
 
-    public String getWeb_host() {
-        return web_host;
+    public String getAppSecret() {
+        return appSecret;
     }
 
-    public void setWeb_host(String web_host) {
-        this.web_host = web_host;
+    public void setAppSecret(String appSecret) {
+        this.appSecret = appSecret;
     }
 }

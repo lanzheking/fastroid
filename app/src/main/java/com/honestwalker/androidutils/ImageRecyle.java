@@ -25,4 +25,16 @@ public class ImageRecyle {
 	public static void recycle(ImageView iv) {
 		recycle(iv.getDrawable());
 	}
+
+    public static void recycle(ImageView iv, Bitmap bitmap) {
+        if(iv != null) {
+            iv.setImageBitmap(null);
+        }
+        try {
+            if(bitmap != null && !bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+        } catch (Exception e) {}
+    }
+
 }

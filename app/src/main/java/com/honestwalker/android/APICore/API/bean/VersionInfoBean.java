@@ -8,16 +8,10 @@ import java.io.Serializable;
 public class VersionInfoBean implements Serializable {
 
     private String version;
+
     private String url;
+
     private AppVersionBean app_version;
-    /**
-     * version : 1.0.1.2
-     * description :
-     * download_url : http://pkg3.fir.im/4a4ae48c719b299aa956712aafca9e90182e6071.apk?attname=jingxinwei-debug.apk_1.0.1.apk
-     * required : true
-     */
-
-
 
     public String getVersion() {
         return version;

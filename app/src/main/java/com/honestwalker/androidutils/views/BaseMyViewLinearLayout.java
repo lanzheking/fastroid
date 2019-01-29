@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.honestwalker.android.spring.core.inject.Injection;
+import com.honestwalker.android.spring.core.inject.ViewInjector;
 import com.honestwalker.androidutils.equipment.DisplayUtil;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
+
+import org.xutils.x;
 
 /** 自定义控件父类，包装了一些常用参数 */
 public abstract class BaseMyViewLinearLayout extends LinearLayout {
@@ -25,7 +27,8 @@ public abstract class BaseMyViewLinearLayout extends LinearLayout {
 		this.context = context;
 		initParams();
 		contentView = inflater.inflate(contentViewLayout(), this);
-		ViewUtils.inject(this , contentView);
+//		x.view().inject(this);
+        Injection.inject(this, contentView);
 		init();
 	}
 	
@@ -35,7 +38,8 @@ public abstract class BaseMyViewLinearLayout extends LinearLayout {
 		this.attrs = attrs;
 		initParams();
 		contentView = inflater.inflate(contentViewLayout(), this);
-		ViewUtils.inject(this , contentView);
+//		x.view().inject(this, contentView);
+        Injection.inject(this, contentView);
 		init();
 	}
 	
@@ -46,7 +50,8 @@ public abstract class BaseMyViewLinearLayout extends LinearLayout {
 		this.attrs = attrs;
 		initParams();
 		contentView = inflater.inflate(contentViewLayout(), this);
-		ViewUtils.inject(this , contentView);
+//		x.view().inject(this, contentView);
+        Injection.inject(this, contentView);
 		init();
 	}
 

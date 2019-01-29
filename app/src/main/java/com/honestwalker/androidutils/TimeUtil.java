@@ -43,7 +43,7 @@ public class TimeUtil {
 	 * 获取当前时间 2011-10-10 21:12:50
 	 * @return
 	 */
-	public String getNow() {
+	public static String getNow() {
 		Calendar c = Calendar.getInstance();
 		return c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" +
 		c.get(Calendar.DAY_OF_MONTH) + " " + c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE) + ":" +

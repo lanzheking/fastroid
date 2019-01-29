@@ -16,7 +16,6 @@ public class BorderViewFix {
 				for(int i=0;i<listView.getChildCount();i++) {
 					if(i > 0) {
 						View view = listView.getChildAt(i);
-						LogCat.d("AAAAAA", "height=" + view.getHeight());
 						view.layout(view.getLeft(), view.getTop() - DisplayUtil.dip2px(context , 2), view.getRight(), view.getBottom());
 					}
 				}

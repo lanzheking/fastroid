@@ -5,15 +5,14 @@ import android.support.v4.app.FragmentTransaction;
 
 import com.honestwalker.android.fastroid.R;
 import com.honestwalker.android.commons.menu.BaseWebViewFragment;
-import com.honestwalker.android.commons.utils.IntentBind.IntentBind;
-import com.lidroid.xutils.view.annotation.ContentView;
+import com.honestwalker.android.spring.core.annotation.IntentInject;
 
 /**
  * 通用的web activity 父类
  */
 public class BaseWebActivity extends BaseActivity {
 
-    @IntentBind
+    @IntentInject
     private String url = "";
 
     private BaseWebViewFragment webViewFragment;

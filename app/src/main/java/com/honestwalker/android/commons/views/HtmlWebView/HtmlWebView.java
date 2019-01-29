@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
+import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -24,15 +26,20 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.honestwalker.android.commons.bean.JSParam;
+import com.honestwalker.android.commons.views.HtmlWebView.FileChoose.FileChooser;
 import com.honestwalker.android.fastroid.R;
 import com.honestwalker.android.commons.KancartReceiverManager;
-import com.honestwalker.android.commons.jscallback.actionclass.JSCallbackObjectFilter;
-import com.honestwalker.androidutils.Application;
+import com.honestwalker.android.spring.core.annotation.RunInMainThread;
 import com.honestwalker.androidutils.IO.LogCat;
 import com.honestwalker.androidutils.IO.SharedPreferencesLoader;
 import com.honestwalker.androidutils.StringUtil;
+import com.honestwalker.androidutils.UIHandler;
+import com.honestwalker.androidutils.equipment.DisplayUtil;
+import com.honestwalker.androidutils.exception.ExceptionUtil;
 import com.honestwalker.androidutils.views.AlertDialogPage;
 
+import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 
@@ -49,11 +56,17 @@ public class HtmlWebView extends WebView {
 
     private String lasterrorstrurl = "";
 
+    private String host = null;
+
+    private FileChooser fileChooser;
+
 //    private RelativeLayout relative;
     private View networkErrorLayout;
     private Button reloadbtn;
 
     private HtmlWebViewCallback htmlWebViewCallback;
+
+    public static final int WEB_FILE_CHOOSE_REQUEST_CODE = 100301;
 
     public HtmlWebView(Context context) {
         super(context);
@@ -73,6 +86,7 @@ public class HtmlWebView extends WebView {
         init();
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void init() {
 
 //        if (Build.VERSION.SDK_INT >= 19) {
@@ -82,7 +96,8 @@ public class HtmlWebView extends WebView {
 //        }
 
         setWebViewClient(mWebViewClient);
-        setWebChromeClient(webChromeClient);
+//        setWebChromeClient(webChromeClient);
+
 //        setLayerType(LAYER_TYPE_HARDWARE, null);
 //        setLayerType(LAYER_TYPE_SOFTWARE, null);
 
@@ -94,14 +109,34 @@ public class HtmlWebView extends WebView {
         getSettings().setDomStorageEnabled(true);
         getSettings().setDatabaseEnabled(true);
         getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+
+        getSettings().setAllowContentAccess(true);
+        getSettings().setAllowFileAccessFromFileURLs(true);
+        getSettings().setAppCacheEnabled(true);
+        getSettings().setFixedFontFamily("sdpfont");
+
+        getSettings().setTextZoom(100);
+
         super.setScrollBarStyle(SCROLLBARS_INSIDE_OVERLAY);
 
-        //getSettings().setUserAgentString("FOSUN_TMC_" + Application.getAppVersion(context));
-        getSettings().setUserAgentString(getSettings().getUserAgentString()+" SHEITC-YDZW/1.0");
-        //如果访问的页面中有Javascript，则webview必须设置支持Javascript
-        getSettings().setJavaScriptEnabled(true);
-        addJavascriptInterface(new JSCallbackObjectFilter((Activity) context, this), "android");
+//        getSettings().setJavaScriptEnabled(true);
+//        addJavascriptInterface(new JSCallbackObjectFilter((Activity) context, this), "android");
 
+    }
+
+//    /**
+//     * 开启js callback
+//     * @param applicationId
+//     */
+//    public void enableJsCallback(String applicationId) {
+//        //如果访问的页面中有Javascript，则webview必须设置支持Javascript
+//        getSettings().setJavaScriptEnabled(true);
+//        addJavascriptInterface(new JSCallbackSupport((Activity) context, this, 0), "jsApiBridge");
+//    }
+
+    public void setUserAgent(String userAgent) {
+        getSettings().setUserAgentString("Android " + getSettings().getUserAgentString() + userAgent +
+                " width=" + DisplayUtil.getWidth(context) + " height=" + DisplayUtil.getHeight(context) );
     }
 
     @SuppressLint("JavascriptInterface")
@@ -128,6 +163,10 @@ public class HtmlWebView extends WebView {
 //                }
 //            });
 //        }
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public void loadUrl(String url) {
@@ -167,28 +206,42 @@ public class HtmlWebView extends WebView {
 
     public synchronized void syncCookie(Context context, String url) {
         if(!url.startsWith("http:")){return;}
+
         CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(context);
+
+        try {
+            java.net.URL URL = new java.net.URL(url);
+            String host = URL.getProtocol() + "://" + URL.getHost();// 获取主机名\
+            LogCat.d("testttttttt", "port=" + URL.getPort() + "  " + (URL.getPort() != -1));
+            if(URL.getPort() != 80 && URL.getPort() != -1) {
+                host += ":" + URL.getPort();
+            }
+//            LogCat.d(TAG, host);
+            url = host;
+        } catch (MalformedURLException e) {
+        }
+
+        //        url = "http://zendai.kaiwangpu.com/";
+//        url = "http://hwlocal.lanzhe.org/";
+        if(host != null) {
+            url = host;
+        }
 
         LogCat.d(TAG, " ");
         LogCat.d(TAG, " ");
         LogCat.d(TAG, url + " 开始同步cookie ");
         String cookie = SharedPreferencesLoader.getInstance(context).getString("cookie", "");
 
+        LogCat.d(TAG, " 本地记录的cookie " + cookie);
+
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
 
         HashMap<String, String> newCookieMap = new HashMap<String , String>();
+//        newCookieMap.put("domain", url);
+        newCookieMap.put("domain", url);
+        newCookieMap.put("path", "/");
         {
-//            {   // 读取全局cookie
-//                HashMap<String , String> staticCookieMap = StaticCookieUtil.getStaticCookie(context);
-//                LogCat.d(TAG, "");
-//                LogCat.d(TAG, "读取全局cookie");
-//                for(String staticCookie : staticCookieMap.keySet()) {
-//                    LogCat.d(TAG, staticCookie + "=" + staticCookieMap.get(staticCookie));
-//                    newCookieMap.put(staticCookie.trim() , staticCookieMap.get(staticCookie));
-//                }
-//                LogCat.d(TAG, "");
-//            }
 
            // 整理cookie
             String webCookie = cookieManager.getCookie(url);
@@ -210,6 +263,7 @@ public class HtmlWebView extends WebView {
                 String[] cookieStrs = cookie.split(";");
                 if(cookieStrs != null && cookieStrs.length > 0) {
                     for(String cookieKV : cookieStrs) {
+                        LogCat.d(TAG, "添加cookie " + cookieKV);
                         String[] kv = cookieKV.split("=");
                         if(kv.length == 1) {
                             newCookieMap.put(kv[0].trim() , "");
@@ -222,59 +276,94 @@ public class HtmlWebView extends WebView {
 
         }
 
-        // 决定发行版本
-//        String publish_version = ContextProperties.getConfig().publish_version;
-//        LogCat.d("publish", "publish_version=" + publish_version);
-//
-//        if("release".equals(publish_version)) {
-//            url = ContextProperties.getConfig().release_webHost;
-//        } else if("test".equals(publish_version)) {
-//            url = ContextProperties.getConfig().test_webHost;
-//        } else if("debug".equals(publish_version)) {
-//            url = ContextProperties.getConfig().debug_webHost;
-//        } else if("localdev".equals(publish_version)) {
-//            url = ContextProperties.getConfig().localdev_webHost;
-//        }
-
-        cookieManager.removeAllCookie();
+//        cookieManager.removeAllCookie();
         CookieManager cm = CookieManager.getInstance();
+        StringBuffer cookieSB = new StringBuffer();
         for(String key : newCookieMap.keySet()) {
             cm.setCookie(url, key + "=" + newCookieMap.get(key));
-            LogCat.d(TAG, "同步cookie添加 " + key + "=" + URLDecoder.decode(newCookieMap.get(key)));
+            cookieSB.append(key + "=" + URLDecoder.decode(newCookieMap.get(key))).append(";");
         }
+        SharedPreferencesLoader.putString("cookie", cookieSB.toString());
 
         cookieSyncManager.sync();
-
-//        {   // 输出同步后的cookie
-//            String newCookie = cookieManager.getCookie(url);
-//            if(newCookie != null) {
-//                LogCat.d(TAG, "同步后的cookie " + URLDecoder.decode(newCookie));
-//            }
-//        }
 
         LogCat.d(TAG, " ");
         LogCat.d(TAG, " ");
 
     }
 
+//    /**
+//     * 添加请求拦截机器
+//     */
+//    List<InterceptRequest> interceptRequests = new ArrayList<>();
+//    public void addInterceptRequest(InterceptRequest interceptRequest) {
+//        if(interceptRequest != null) {
+//            interceptRequests.add(interceptRequest);
+//        }
+//    }
+//    /**
+//     * 删除请求拦截机器
+//     */
+//    public void removeInterceptRequest(InterceptRequest interceptRequest) {
+//        if(interceptRequest != null) {
+//            interceptRequests.remove(interceptRequest);
+//        }
+//    }
+
+//    private InputStream fontInputSteam = null;
+//    public void setFontInputSteam(InputStream fontInputSteam) {
+//        this.fontInputSteam = fontInputSteam;
+//    }
+
     private WebViewClient mWebViewClient = new WebViewClient() {
+
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+
+            LogCat.d("URLALL", "api<21请求： " + url);
+
+//            if(interceptRequests != null) {
+//                for (InterceptRequest interceptRequest : interceptRequests) {
+//                    if(interceptRequest.interceptRule(HtmlWebView.this, this, url)) {
+//                    LogCat.d("URL", "拦截URL " + url);
+//                    WebResourceResponse webResourceResponse = interceptRequest.getResponse(HtmlWebView.this, this, url);
+//                    if(webResourceResponse != null) {
+//                        return webResourceResponse;
+//                    } else {
+//                        break;
+//                    }
+//                    }
+//                }
+//            }
+
+            return super.shouldInterceptRequest(view, url);
+        }
 
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-            LogCat.d("TEST", "shouldInterceptRequest2 " + request.getUrl());
+            WebResourceResponse response = null;
+
+            LogCat.d("URLALL", "请求： " + request.getUrl());
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+
+//                if(interceptRequests != null) {
+//                    for (InterceptRequest interceptRequest : interceptRequests) {
+//                        if(interceptRequest.interceptRule(HtmlWebView.this, this, request)) {
+//                            LogCat.d("URL", "拦截URL " + request.getUrl());
+//                            return interceptRequest.getResponse(HtmlWebView.this, this, request);
+//                        }
+//                    }
+//                }
+
+            }
             return super.shouldInterceptRequest(view, request);
         }
 
         @Override
         public void onLoadResource(WebView view, String url) {
             super.onLoadResource(view, url);
-//            LogCat.d("TEST", "onLoadResource  " + url);
-//            if(url.indexOf("/discount/") > -1 ||
-//                url.indexOf("/frontend/") > -1) {
-//                syncCookie(context, url);
-//                LogCat.d("TEST", "同步   " + url + " cookie");
-//            }
         }
 
         @Override
@@ -302,12 +391,12 @@ public class HtmlWebView extends WebView {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
             if(htmlWebViewCallback != null) {
                 htmlWebViewCallback.onPageStarted(view , url , favicon);
             }
             syncCookie(context, url);
             LogCat.d(TAG, ((Activity) context).getLocalClassName() + ",onPageStarted " + url);
+            super.onPageStarted(view, url, favicon);
         }
 
         @Override
@@ -318,7 +407,9 @@ public class HtmlWebView extends WebView {
                 htmlWebViewCallback.onPageFinished(view , url);
             }
 
-//            if (!getSettings().getLoadsImagesAutomatically()) {
+            syncCookie(getContext(), url);
+
+//            if (!getSettings().getLoadsImagesAutomatically()) {-
 //                getSettings().setLoadsImagesAutomatically(true);
 //            }
 //            if(Build.VERSION.SDK_INT >= 19) {
@@ -336,12 +427,26 @@ public class HtmlWebView extends WebView {
         }
 
         @Override
+        public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+            super.onReceivedHttpError(view, request, errorResponse);
+            LogCat.d(TAG, ((Activity) context).getLocalClassName() + ",onReceivedHttpError");
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            super.onReceivedSslError(view, handler, error);
+            LogCat.d(TAG, ((Activity) context).getLocalClassName() + ",onReceivedSslError");
+        }
+
+        @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
 
             if(htmlWebViewCallback != null) {
                 htmlWebViewCallback.onReceivedError(view , errorCode , description , failingUrl);
             }
+
+            LogCat.d(TAG, ((Activity) context).getLocalClassName() + ",onReceivedError");
 
 //            LogCat.d(TAG , "onReceivedError " + errorCode);
 //
@@ -355,39 +460,75 @@ public class HtmlWebView extends WebView {
 //                networkErrorLayout.setVisibility(View.VISIBLE);
 //            }
 
-
-
         }
     };
 
+    private ValueCallback mUploadMessage;
+
     private WebChromeClient webChromeClient = new WebChromeClient() {
 
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            super.onProgressChanged(view, newProgress);
+            LogCat.d(TAG, "newProgress=" + newProgress);
+        }
+
         // For Android 3.0+
-        public void openFileChooser(ValueCallback<Uri> uploadMsg) {
-            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-            i.addCategory(Intent.CATEGORY_OPENABLE);
-            i.setType("image/*");
-            ((Activity)context).startActivityForResult(Intent.createChooser(i, "File Chooser"), 2000);
+        public void openFileChooser(ValueCallback<Uri> filePathCallback) {
+            LogCat.d("FILE", "openFileChooser");
+//            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+//            i.addCategory(Intent.CATEGORY_OPENABLE);
+//            i.setType("*/*");
+//            ((Activity)context).startActivityForResult(Intent.createChooser(i, "File Chooser"), WEB_FILE_CHOOSE_REQUEST_CODE);
+//            mUploadMessage = filePathCallback;
+
+            fileChooser = new FileChooser((Activity)context, HtmlWebView.this);
+            fileChooser.choose();
 
         }
 
         // For Android 3.0+
-        public void openFileChooser(ValueCallback uploadMsg, String acceptType) {
-            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-            i.addCategory(Intent.CATEGORY_OPENABLE);
-            i.setType("*/*");
-            ((Activity)context).startActivityForResult(
-                    Intent.createChooser(i, "File Browser"),
-                    3000);
+        public void openFileChooser(ValueCallback<Uri> filePathCallback, String acceptType) {
+            LogCat.d("FILE", "openFileChooser");
+//            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+//            i.addCategory(Intent.CATEGORY_OPENABLE);
+//            i.setType("*/*");
+//            ((Activity)context).startActivityForResult(Intent.createChooser(i, "File Browser"),
+//                    WEB_FILE_CHOOSE_REQUEST_CODE);
+//            mUploadMessage = filePathCallback;
+            fileChooser = new FileChooser((Activity)context, HtmlWebView.this, acceptType, null);
+            fileChooser.choose();
         }
 
         //For Android 4.1
-        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
+        public void openFileChooser(ValueCallback<Uri> filePathCallback, String acceptType, String capture) {
+            LogCat.d("FILE", "openFileChooser 4.1");
+//            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+//            i.addCategory(Intent.CATEGORY_OPENABLE);
+//            i.setType("image/*");
+//            ((Activity)context).startActivityForResult(Intent.createChooser(i, "File Chooser"),
+//                    WEB_FILE_CHOOSE_REQUEST_CODE);
+//            mUploadMessage = filePathCallback;
+            fileChooser = new FileChooser((Activity)context, HtmlWebView.this, acceptType, capture);
+            fileChooser.choose();
+        }
+
+        @Override
+        public boolean onShowFileChooser(WebView webView,
+                                         ValueCallback<Uri[]> filePathCallback,
+                                         FileChooserParams fileChooserParams) {
+            LogCat.d("FILE", "onShowFileChooser");
+            mUploadMessage = filePathCallback;
             Intent i = new Intent(Intent.ACTION_GET_CONTENT);
             i.addCategory(Intent.CATEGORY_OPENABLE);
-            i.setType("image/*");
-            ((Activity)context).startActivityForResult(Intent.createChooser(i, "File Chooser"), 10000);
+            i.setType("*/*");
+            ((Activity)context).startActivityForResult(Intent.createChooser(i, "文件选择"),
+                    WEB_FILE_CHOOSE_REQUEST_CODE);
 
+            fileChooser = new FileChooser((Activity)context, HtmlWebView.this, null, null);
+            fileChooser.choose();
+
+            return true;
         }
 
         @Override
@@ -425,6 +566,14 @@ public class HtmlWebView extends WebView {
 
     };
 
+    public void onFileChooseResult(int requestCode, int resultCode, Intent intent) {
+        if(null == mUploadMessage) return;
+
+//        Uri uri = Uri.fromFile(new File(path));
+//        mUploadMessage.onReceiveValue(uri);
+
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -434,14 +583,14 @@ public class HtmlWebView extends WebView {
         this.htmlWebViewCallback = htmlWebViewCallback;
     }
 
-    @Override
-    protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
-        super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
-        LogCat.d("TESTT", "scrollY=" + scrollY + "  clampedY=" + clampedY + "   ");
-        if(clampedY) { // 滚动到底部通知页面
-            callJSScrollEvent();
-        }
-    }
+//    @Override
+//    protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
+//        super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
+//        LogCat.d("TESTT", "scrollY=" + scrollY + "  clampedY=" + clampedY + "   ");
+//        if(clampedY) { // 滚动到底部通知页面
+//            callJSScrollEvent();
+//        }
+//    }
 
 //    // 目的时为了让webview滑动时调用js ， 告诉h5 页面滑动了
 //    @Override
@@ -473,14 +622,60 @@ public class HtmlWebView extends WebView {
 //    }
 
     private void callJSScrollEvent() {
-        LogCat.d("TEST", "aaa");
-//        super.loadUrl("javascript:dispatchEvent(new Event('click'))");
-        super.loadUrl("javascript:viewModels.currentModel.loadMore()");
     }
 
     private OnTouchListener onTouchListener;
     public void setOnTouchListener(OnTouchListener onTouchListener) {
         this.onTouchListener = onTouchListener;
+    }
+
+    public ValueCallback getmUploadMessage() {
+        return mUploadMessage;
+    }
+
+    /**
+     * 重置文件选择
+     */
+    public void resetFileChoose() {
+        try {
+            if(getmUploadMessage() != null) {
+                getmUploadMessage().onReceiveValue(null);
+            }
+        } catch (Exception e) {
+            ExceptionUtil.showException(e);
+        }
+    }
+
+    public void setmUploadMessage(ValueCallback<Uri[]> mUploadMessage) {
+        this.mUploadMessage = mUploadMessage;
+    }
+
+    public FileChooser getFileChooser() {
+        return fileChooser;
+    }
+
+    public void execJS(String method) {
+        execJS(method, null);
+    }
+
+    @RunInMainThread
+    public void execJS(final String method, final JSParam paramKVMap) {
+        String newMethod = method;
+        if(newMethod == null) {
+            LogCat.d("JS", "callback null");
+            return;
+        }
+        if(paramKVMap != null) {
+            for (String key : paramKVMap.getParams().keySet()) {
+                if(key instanceof String) {
+                    newMethod = newMethod.replace("${" + key + "}", "'" + paramKVMap.getParams().get(key) + "'");
+                } else {
+                    newMethod = newMethod.replace("${" + key + "}", paramKVMap.getParams().get(key) + "");
+                }
+            }
+        }
+        LogCat.d("JS", "执行 " + newMethod);
+        loadUrl("javascript: " + newMethod);
     }
 
 }

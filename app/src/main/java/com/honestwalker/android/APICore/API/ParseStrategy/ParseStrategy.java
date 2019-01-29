@@ -9,5 +9,4 @@ import com.honestwalker.android.APICore.API.resp.BaseResp;
 public interface ParseStrategy<T> {
     public Class getStrategyClass();
     public T transition(BaseResp obj) throws Exception ;
-//    public BaseResp<T> transition(BaseResp obj) throws Exception ;
 }

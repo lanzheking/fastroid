@@ -11,34 +11,56 @@ import com.honestwalker.androidutils.equipment.SDCardUtil;
 public class ExceptionUtil {
 	public static Boolean show = false;
 	public final static String TAG = "AndroidRuntime";
-	public static void showException(String tag,Exception e) {
-		if (LogCat.showLog()) {
-			if (e != null && SDCardUtil.existsSDCard()) {
-				StackTraceElement[] stes = e.getStackTrace();
-				LogCat.e(tag,"<=======================KancartException====================>");
-				LogCat.e(tag,e.getMessage() + " " + e.toString());
-				for (StackTraceElement ste : stes) {
+
+	public static void showException(String tag, Throwable throwable) {
+		StackTraceElement[] stes = throwable.getStackTrace();
+		LogCat.e(tag,"<=======================KancartException====================>");
+		LogCat.e(tag,throwable.getMessage() + " " + throwable.toString());
+		for (StackTraceElement ste : stes) {
+			LogCat.e(tag,ste.toString());
+		}
+
+		if(throwable.getCause() != null) {
+			LogCat.e(tag,"<================KancartException Cause=====================>");
+			LogCat.e(tag,throwable.getCause().toString());
+			StackTraceElement[] stesCause = throwable.getCause().getStackTrace();
+			if(stesCause != null) {
+				for (StackTraceElement ste : stesCause) {
 					LogCat.e(tag,ste.toString());
 				}
-				
-				if(e.getCause() != null) {
-					LogCat.e(tag,"<================KancartException Cause=====================>");
-					LogCat.e(tag,e.getCause().toString());
-					StackTraceElement[] stesCause = e.getCause().getStackTrace();
-					if(stesCause != null) {
-						for (StackTraceElement ste : stesCause) {
-							LogCat.e(tag,ste.toString());
-						}
-					}
-				}
-				LogCat.e(tag,"<============================================================>");
 			}
 		}
+		LogCat.e(tag,"<============================================================>");
 	}
-	
-	public static void showException(Exception e) {
-		if (LogCat.showLog()) {
-			showException(TAG, e);
+
+	public static void showException(String tag,Exception e) {
+		if (e != null && SDCardUtil.existsSDCard()) {
+			StackTraceElement[] stes = e.getStackTrace();
+			LogCat.e(tag,"<=======================KancartException====================>");
+			LogCat.e(tag,e.getMessage() + " " + e.toString());
+			for (StackTraceElement ste : stes) {
+				LogCat.e(tag,ste.toString());
+			}
+
+			if(e.getCause() != null) {
+				LogCat.e(tag,"<================KancartException Cause=====================>");
+				LogCat.e(tag,e.getCause().toString());
+				StackTraceElement[] stesCause = e.getCause().getStackTrace();
+				if(stesCause != null) {
+					for (StackTraceElement ste : stesCause) {
+						LogCat.e(tag,ste.toString());
+					}
+				}
+			}
+			LogCat.e(tag,"<============================================================>");
 		}
+	}
+
+	public static void showException(Exception e) {
+		showException(TAG, e);
+	}
+
+	public static void showException(Throwable e) {
+		showException(TAG, e);
 	}
 }

@@ -67,7 +67,14 @@ public abstract class BaseArrayAdapter<T> extends ArrayAdapter<T> {
 		}
 		
 	}
-	
+
+	/**
+	 * 由内存缓存加载view 条目
+	 * @param position
+	 * @param convertView
+	 * @param item
+     * @return
+     */
 	private View loadWithCache(int position , View convertView, T item) {
 		if(!viewMap.containsKey(position)) {
 			

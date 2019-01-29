@@ -3,6 +3,9 @@ package com.honestwalker.androidutils.IO;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+/**
+ * SharedPreferences 操作工具类
+ */
 public class SharedPreferencesLoader {
 	
 	private static SharedPreferencesLoader instance;
@@ -12,7 +15,7 @@ public class SharedPreferencesLoader {
 	public static SharedPreferencesLoader getInstance(Context context) {
 		SharedPreferencesLoader.context = context;
 		instance = new SharedPreferencesLoader();
-		sp = context.getSharedPreferences("KanCart", Context.MODE_MULTI_PROCESS);
+		sp = context.getSharedPreferences("SP", Context.MODE_MULTI_PROCESS);
 		return instance;
 	}
 	

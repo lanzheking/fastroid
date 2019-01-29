@@ -4,7 +4,14 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 
 public class BitmapUtil {
-	
+
+    /**
+     * 压缩bitmap 到指定宽高
+     * @param bitmap
+     * @param w
+     * @param h
+     * @return
+     */
 	public static Bitmap zoomBitmap(Bitmap bitmap, int w, int h) { 
         int width = bitmap.getWidth(); 
         int height = bitmap.getHeight(); 
@@ -16,7 +23,13 @@ public class BitmapUtil {
                 matrix, true); 
         return newbmp; 
     }
-	
+
+    /**
+     * 按照倍数压缩图像
+     * @param bitmap
+     * @param zoomLevel
+     * @return
+     */
 	public static Bitmap zoomBitmap(Bitmap bitmap,double zoomLevel) {
 		int width = bitmap.getWidth(); 
         int height = bitmap.getHeight(); 

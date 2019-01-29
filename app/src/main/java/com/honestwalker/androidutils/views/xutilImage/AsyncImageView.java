@@ -16,10 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.honestwalker.androidutils.ViewUtils.ViewSizeHelper;
-import com.lidroid.xutils.BitmapUtils;
-import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
-import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
-import com.lidroid.xutils.bitmap.callback.DefaultBitmapLoadCallBack;
+
+import org.xutils.common.Callback;
+import org.xutils.x;
 
 /**
  * 异步图片工具
@@ -37,16 +36,12 @@ public class AsyncImageView extends RelativeLayout{
 		this.allowMask = allowMask;
 	}
 
-	private BitmapUtils bitmapUtils;
-	
+
 	public ImageView getImageView() {
 		return imageView;
 	}
 	public ProgressBar getProgressBar() {
 		return progressBar;
-	}
-	public BitmapUtils getBitmapUtils() {
-		return bitmapUtils;
 	}
 
 	public AsyncImageView(Context context) {
@@ -88,8 +83,6 @@ public class AsyncImageView extends RelativeLayout{
 			maskView.setVisibility(View.GONE);
 		}
 		
-		bitmapUtils = new BitmapUtils(context);
-		bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.ARGB_8888);
 	}
 
 	public void setScaleType(ScaleType scaleType) {
@@ -108,39 +101,9 @@ public class AsyncImageView extends RelativeLayout{
 		ViewSizeHelper.getInstance(context).setHeight(imageView, height);
 		imageView.setImageBitmap(bitmap);
 	}
-	
-	public AsyncImageView configDefaultLoadingImage(int loadingImageRes){
-		 bitmapUtils.configDefaultLoadingImage(loadingImageRes);
-	     return this;
-	}
 
-	public AsyncImageView configDefaultLoadingImage(Drawable loadingImagedDrawable){
-		bitmapUtils.configDefaultLoadingImage(loadingImagedDrawable);
-		return this;
-	}
-
-	public AsyncImageView configDefaultLoadingImage(Bitmap loadingImagedBitmap){
-		bitmapUtils.configDefaultLoadingImage(loadingImagedBitmap);
-		return this;
-	}
-	
-	public AsyncImageView configDefaultLoadFailedImage(int loadFailedImageRes){
-		bitmapUtils.configDefaultLoadFailedImage(loadFailedImageRes);
-		return this;
-	}
-	
-	public AsyncImageView configDefaultLoadFailedImage(Drawable loadFailedImageDrawable){
-		bitmapUtils.configDefaultLoadFailedImage(loadFailedImageDrawable);
-		return this;
-	}
-
-	public AsyncImageView configDefaultLoadFailedImage(Bitmap loadFailedImageBitmap){
-		bitmapUtils.configDefaultLoadFailedImage(loadFailedImageBitmap);
-		return this;
-	}
-	
-	public void loadUrl(String imageUrl) {
-		bitmapUtils.display(imageView, imageUrl, new CustomBitmapLoadCallBack());
+	public void setImageDrawable(Drawable drawable) {
+		imageView.setImageDrawable(drawable);
 	}
 	
 	public void loadUrl(String imageUrl, int width, int height) {
@@ -148,8 +111,31 @@ public class AsyncImageView extends RelativeLayout{
 		ViewSizeHelper.getInstance(context).setHeight(this, height);
 		ViewSizeHelper.getInstance(context).setWidth(imageView, width);
 		ViewSizeHelper.getInstance(context).setHeight(imageView, height);
-		bitmapUtils.display(imageView, imageUrl, new CustomBitmapLoadCallBack());
+		x.image().bind(new ImageView(context), imageUrl, commonCallback);
 	}
+
+	private Callback.CommonCallback<Drawable> commonCallback = new Callback.CommonCallback<Drawable>() {
+		@Override
+		public void onSuccess(Drawable drawable) {
+			progressBar.setVisibility(View.GONE);
+			setImageDrawable(drawable);
+		}
+
+		@Override
+		public void onError(Throwable ex, boolean isOnCallback) {
+
+		}
+
+		@Override
+		public void onCancelled(CancelledException cex) {
+
+		}
+
+		@Override
+		public void onFinished() {
+
+		}
+	};
 	
 	private static final ColorDrawable TRANSPARENT_DRAWABLE = new ColorDrawable(android.R.color.transparent);
 
@@ -161,16 +147,6 @@ public class AsyncImageView extends RelativeLayout{
                 });
         imageView.setImageDrawable(transitionDrawable);
         transitionDrawable.startTransition(500);
-    }
-	
-	public class CustomBitmapLoadCallBack extends DefaultBitmapLoadCallBack<ImageView> {
-
-        @Override
-        public void onLoadCompleted(ImageView container, String uri, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
-        	progressBar.setVisibility(View.GONE);
-        	fadeInDisplay(container, bitmap);
-        	imageView.setBackgroundColor(Color.argb( 0, 0, 0, 0));
-        }
     }
 	
 	@Override

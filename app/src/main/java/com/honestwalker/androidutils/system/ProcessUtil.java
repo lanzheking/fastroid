@@ -10,6 +10,10 @@ import java.util.List;
 
 public class ProcessUtil {
 
+	public static boolean isMainProcess(Context context) {
+		return ProcessUtil.getCurProcessName(context).indexOf(":") == -1;
+	}
+
 	/**
 	 * 进程自杀
 	 */

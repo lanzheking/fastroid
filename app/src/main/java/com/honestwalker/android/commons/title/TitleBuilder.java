@@ -22,6 +22,7 @@ import com.honestwalker.androidutils.equipment.DisplayUtil;
  */
 public class TitleBuilder {
     private Context context;
+    private View contentView;
 
     private RelativeLayout titleLayout;
     private RelativeLayout 	titleLeftLayout;
@@ -43,6 +44,10 @@ public class TitleBuilder {
 
     public TitleBuilder(Context context) {
         this(context, null);
+    }
+
+    public TitleBuilder(View contentView) {
+        this(contentView, null);
     }
 
     private Theme theme;
@@ -79,6 +84,10 @@ public class TitleBuilder {
         this(context, titleArg, Theme.Standard);
     }
 
+    public TitleBuilder(View contentView , TitleArg titleArg) {
+        this(contentView, titleArg, Theme.Standard);
+    }
+
     public TitleBuilder(Context context , TitleArg titleArg,Theme theme) {
         this.context = context;
         this.theme = theme;
@@ -97,16 +106,48 @@ public class TitleBuilder {
 
     }
 
+    public TitleBuilder(View contentView , TitleArg titleArg,Theme theme) {
+        this.context = contentView.getContext();
+        this.contentView = contentView;
+        this.theme = theme;
+
+        viewSizeHelper = ViewSizeHelper.getInstance(context);
+        screenWidth = DisplayUtil.getWidth(context) ;
+        screenHeight = DisplayUtil.getHeight(context) ;
+
+        initTitle();
+
+        setTitleViewAttr();
+
+        if(titleArg != null) {
+            setTitle(titleArg);
+        }
+
+    }
+
     public void initTitle() {
-        titleLayout  	  = (RelativeLayout) ((Activity)context).findViewById(R.id.title_layout);
-        titleTV 	 	  = (TextView) ((Activity)context).findViewById(R.id.title_middle_tv);
-        titleIV			  = (ImageView) ((Activity)context).findViewById(R.id.title_middle_iv);
-        titleLeftLayout   = (RelativeLayout) ((Activity)context).findViewById(R.id.title_left_layout);
-        titleLeftTV 	  = (TextView) ((Activity)context).findViewById(R.id.title_left_tv);
-        titleLeftIV 	  = (ImageView) ((Activity)context).findViewById(R.id.title_left_iv);
-        titleRightLayout  = (RelativeLayout) ((Activity)context).findViewById(R.id.title_right_layout);
-        titleRightTV 	  = (TextView)  ((Activity)context).findViewById(R.id.title_right_tv);
-        titleRightIV 	  = (ImageView) ((Activity)context).findViewById(R.id.title_right_iv);
+
+        if(contentView != null) {
+            titleLayout  	  = (RelativeLayout) contentView.findViewById(R.id.title_layout);
+            titleTV 	 	  = (TextView) contentView.findViewById(R.id.title_middle_tv);
+            titleIV			  = (ImageView) contentView.findViewById(R.id.title_middle_iv);
+            titleLeftLayout   = (RelativeLayout) contentView.findViewById(R.id.title_left_layout);
+            titleLeftTV 	  = (TextView) contentView.findViewById(R.id.title_left_tv);
+            titleLeftIV 	  = (ImageView) contentView.findViewById(R.id.title_left_iv);
+            titleRightLayout  = (RelativeLayout) contentView.findViewById(R.id.title_right_layout);
+            titleRightTV 	  = (TextView)  contentView.findViewById(R.id.title_right_tv);
+            titleRightIV 	  = (ImageView) contentView.findViewById(R.id.title_right_iv);
+        } else {
+            titleLayout  	  = (RelativeLayout) ((Activity)context).findViewById(R.id.title_layout);
+            titleTV 	 	  = (TextView) ((Activity)context).findViewById(R.id.title_middle_tv);
+            titleIV			  = (ImageView) ((Activity)context).findViewById(R.id.title_middle_iv);
+            titleLeftLayout   = (RelativeLayout) ((Activity)context).findViewById(R.id.title_left_layout);
+            titleLeftTV 	  = (TextView) ((Activity)context).findViewById(R.id.title_left_tv);
+            titleLeftIV 	  = (ImageView) ((Activity)context).findViewById(R.id.title_left_iv);
+            titleRightLayout  = (RelativeLayout) ((Activity)context).findViewById(R.id.title_right_layout);
+            titleRightTV 	  = (TextView)  ((Activity)context).findViewById(R.id.title_right_tv);
+            titleRightIV 	  = (ImageView) ((Activity)context).findViewById(R.id.title_right_iv);
+        }
 
         initSize();
 

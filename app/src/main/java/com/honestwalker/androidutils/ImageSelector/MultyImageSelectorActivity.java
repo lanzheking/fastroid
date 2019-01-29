@@ -18,6 +18,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 自定义图片选择器 activity
+ */
 public class MultyImageSelectorActivity extends Activity {
 	
 	private HashMap<String, List<String>> mGruopMap = new HashMap<String, List<String>>();

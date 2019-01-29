@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public class UpLoadVoiceInfo implements Serializable {
 
-    String hash;
+    private String hash;
 
     public String getHash() {
         return hash;

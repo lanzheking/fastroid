@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.honestwalker.androidutils.IO.LogCat;
 import com.honestwalker.androidutils.IO.RClassUtil;
+import com.honestwalker.androidutils.StringUtil;
+import com.honestwalker.androidutils.exception.ExceptionUtil;
 import com.honestwalker.androidutils.os.BundleObject;
 
 import java.util.HashMap;
@@ -32,16 +34,23 @@ public class Loading {
 	private static Map<Context,Dialog> dialogMap = new HashMap<Context, Dialog>();
 	
 	private static boolean configLoaded = false;
-	public static void init(Context context) {
+	public static void init(Context context, Class rClass) {
+		LogCat.d("loading", "1111");
 		if(configLoaded) return;
+		LogCat.d("loading", "2222");
 		configLoaded = true;
 		try {
-			Class rClass = RClassUtil.getRClass(context);
+//			Class rClass = RClassUtil.getRClass(context);
+			LogCat.d("loading", "rClass=" + rClass);
 			List<LoadingStyle> loadingStyleList = LoadingLoader.load(context , RClassUtil.getResId(rClass , "raw.loading_config"));
+
 			for(LoadingStyle loadingStyle : loadingStyleList) {
 				dialogStyleMap.put(loadingStyle.getId() , loadingStyle);
+				LogCat.d("loading", "注册loading" + loadingStyle.getId());
 			}
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			ExceptionUtil.showException("loading", e);
+		}
 	}
 
 	/**
@@ -52,23 +61,47 @@ public class Loading {
 	public static boolean containsDialog(String dialogName) {
 		return dialogStyleMap.containsKey(dialogName);
 	}
-	
+
+
+	public static void showCancelable(Context context) {
+		show(context, "loading_cancelable");
+	}
+
+	public static void showCancelable(Context context, String content) {
+		show(context, "loading_cancelable", content);
+	}
+
+	public static void showCancelunable(Context context) {
+		show(context, "loading_cancelunable");
+	}
+
+	public static void showCancelunable(Context context, String content) {
+		show(context, "loading_cancelunable", content);
+	}
+
 	public static void show(Context context,String dialogName) {
-		show(context,dialogName,null);
+		show(context,dialogName,null, null);
+	}
+
+	public static void show(Context context,String dialogName, String content) {
+		show(context, dialogName, content, null);
 	}
 	
-	public static void show(Context context,String dialogName , final Handler onBackPressHandler) {
+	public static void show(Context context, String dialogName , String text, final Handler onBackPressHandler) {
 		LoadingStyle style = dialogStyleMap.get(dialogName);
 		BundleObject data = new BundleObject();
 		data.put("style", style);
 		data.put("context", context);
 		data.put("onBackPressHandler", onBackPressHandler);
+		if(!StringUtil.isEmptyOrNull(text)) {
+			data.put("text", text);
+		}
 		Message msg = new Message();
 		msg.what=1;
 		msg.obj = data;
 		showDialogHandler.sendMessage(msg);
 	}
-	
+
 	public static void dismiss(Context context){
 		Message msg = new Message();
 		msg.what = 0;
@@ -83,6 +116,7 @@ public class Loading {
 				BundleObject data = (BundleObject) msg.obj;
 				LoadingStyle style = (LoadingStyle) data.get("style");
 				Context context = (Context) data.get("context");
+				String text = data.getString("text");
 				if(context==null || style==null){
 					return;
 				}
@@ -101,7 +135,11 @@ public class Loading {
 					LayoutParams lp = new LayoutParams(width , height);
 					TextView messageTV = (TextView) view.findViewById(style.getTextResourceId());
 					if(messageTV != null) {
-						messageTV.setText(style.getText());
+						if(text != null) {
+							messageTV.setText(text);
+						} else {
+							messageTV.setText(style.getText());
+						}
 					}
 					loadingDialog.setCancelable(false);
 					if (style.isCancelable()) {

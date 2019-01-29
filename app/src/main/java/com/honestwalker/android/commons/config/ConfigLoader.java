@@ -11,8 +11,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * 程序主配置读取工具
+ */
 public class ConfigLoader {
 
+	/**
+	 * 程序主配置加载
+	 * @param context
+	 * @param mainConfigRes
+	 * @return
+	 * @throws Exception
+     */
 	public static ContextProperties load(Context context, int mainConfigRes) throws Exception {
 
 		Properties properties = new Properties();

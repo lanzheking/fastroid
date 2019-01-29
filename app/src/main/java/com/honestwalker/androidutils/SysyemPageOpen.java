@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
+/**
+ * 打开手机系统的一些页面或功能
+ */
 public class SysyemPageOpen {
 	
 	/**

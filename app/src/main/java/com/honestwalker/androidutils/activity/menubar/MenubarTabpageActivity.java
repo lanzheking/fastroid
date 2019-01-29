@@ -1,7 +1,5 @@
 package com.honestwalker.androidutils.activity.menubar;
 
-import com.honestwalker.androidutils.IO.LogCat;
-
 import android.app.Activity;
 
 public abstract class MenubarTabpageActivity extends Activity {

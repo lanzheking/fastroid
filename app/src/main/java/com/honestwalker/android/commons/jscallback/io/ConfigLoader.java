@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.honestwalker.android.commons.jscallback.bean.JSActionConfigBean;
 import com.honestwalker.androidutils.IO.RClassUtil;
+import com.honestwalker.androidutils.StringUtil;
 import com.honestwalker.androidutils.exception.ExceptionUtil;
 
 import org.jdom.Document;
@@ -24,11 +25,20 @@ import java.util.List;
 public class ConfigLoader {
 
     public static ArrayList<JSActionConfigBean> loadConfig(Context context) throws FileNotFoundException, JDOMException, IOException {
+        return loadConfig(context, null);
+    }
+
+    public static ArrayList<JSActionConfigBean> loadConfig(Context context, String applicationId) throws FileNotFoundException, JDOMException, IOException {
 
         int jsCallbackConfigResId = 0;
 
         try {
-            Class rClass = Class.forName(context.getPackageName() + ".R");
+            Class rClass;
+            if(StringUtil.isEmptyOrNull(applicationId)) {
+                rClass = Class.forName(context.getPackageName() + ".R");
+            } else {
+                rClass = Class.forName(applicationId + ".R");
+            }
             jsCallbackConfigResId = RClassUtil.getResId(rClass, "raw.webview_js_callback");  // 读取配置索引值
         } catch (Exception e) {
             ExceptionUtil.showException("JS" , e);
@@ -57,22 +67,15 @@ public class ConfigLoader {
             JSActionConfigBean bean = loadAction(item);
             return bean;
         }
-//      else {
-//
-//      }
         return null;
     }
 
     private static JSActionConfigBean loadAction(Element item) {
-//        String beanClass  = readSingleNoteValue(item , "bean-class");
         String actionClass = readSingleNoteValue(item , "class");
         String actionKey = item.getAttributeValue("key");
-//        Log.d("TEST", "actionKey=" + actionKey + "  beanClass=" + beanClass + "   clazz=" + actionClass);
         try {
             JSActionConfigBean bean = new JSActionConfigBean();
-//            Class beanClazz = Class.forName(beanClass);
             Class actionClazz = Class.forName(actionClass);
-//            bean.setBeanClass(beanClazz);
             bean.setClazz(actionClazz);
             bean.setKey(actionKey);
             return bean;

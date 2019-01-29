@@ -10,6 +10,9 @@ import java.io.RandomAccessFile;
 
 import com.honestwalker.androidutils.IO.LogCat;
 
+/**
+ * 文件加密工具类
+ */
 public class FileEncrypt {
 
 	public static void encrypt(String fileUrl, String key) throws Exception {

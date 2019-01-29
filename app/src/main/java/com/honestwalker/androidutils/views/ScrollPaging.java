@@ -39,8 +39,6 @@ public class ScrollPaging implements OnScrollListener {
 		endPosition = firstVisibleItem + visibleItemCount;
 		
 		if( scrollPagingListener != null) {
-			LogCat.d("PAGING", "totalItemCount=" + totalItemCount + "  visibleItemCount=" + visibleItemCount + 
-					"  scrollPagingListener.getTotalResult()=" + scrollPagingListener.getTotalResult());
 			if (!allDataLoaded && scrollPagingListener.getTotalResult() > 0 && totalItemCount >= scrollPagingListener.getTotalResult() -1) {
 				LogCat.d("PAGING", "allDataLoaded");
 				scrollPagingListener.allDataLoaded();
@@ -50,8 +48,6 @@ public class ScrollPaging implements OnScrollListener {
 					&& visibleItemCount <= totalItemCount 			// 页面大于1页时
 					&& scrollPagingListener.getTotalResult() > totalItemCount) // 页面大于1页时 
 					{
-//				LogCat.d("PAGING", "firstVisibleItem=" + firstVisibleItem + "  visibleItemCount=" + visibleItemCount + 
-//						"  totalItemCount=" + totalItemCount);
 				if(!lastVisibleActionLock && firstVisibleItem + visibleItemCount >= totalItemCount) {		// 显示倒数第getReciprocalPosition()条时
 					scrollPagingListener.lastPositionVisible(scrollPagingListener.getReciprocalPosition() , totalItemCount , scrollPagingListener.getTotalResult());
 				} else if(firstVisibleItem + visibleItemCount >= totalItemCount - scrollPagingListener.getReciprocalPosition()){                                                       // 显示到最后一条时

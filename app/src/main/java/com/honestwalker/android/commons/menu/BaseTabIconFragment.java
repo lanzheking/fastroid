@@ -29,17 +29,9 @@ public class BaseTabIconFragment extends Fragment {
 
     private void readAnnotation(BaseTabIconFragment fragment){
 
-//        FragmentMenu menu = fragment.getClass().getAnnotation(FragmentMenu.class);
-//        if(menu != null) {
-//
-//        } else {
-//            throw new RuntimeException("fragment 未配置");
-//        }
-
         TrickyFragment tricky = fragment.getClass().getAnnotation(TrickyFragment.class);
         if(tricky != null){
             isTricky = true;
-//            title = tricky.trickyTitle();
         }
     }
 

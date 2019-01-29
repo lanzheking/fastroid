@@ -1,26 +1,27 @@
 package com.honestwalker.android.commons;
 
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 
-import com.honestwalker.android.fastroid.R;
 import com.honestwalker.android.commons.menu.BlurViewPager;
 import com.honestwalker.android.commons.menu.IMenuContext;
 import com.honestwalker.android.commons.menu.MenuBuilder;
 import com.honestwalker.android.commons.menu.TabPageIndicator;
 import com.honestwalker.android.commons.title.TitleArg;
+import com.honestwalker.android.fastroid.R;
 import com.honestwalker.android.kc_commons.ui.activity.BaseFragmentActivity;
-import com.honestwalker.android.kc_commons.ui.utils.TranslucentStatus;
-import com.honestwalker.androidutils.Application;
+import com.honestwalker.android.kc_test.KCTestLauncher;
 import com.honestwalker.androidutils.activity.fragment.menubar.MenubarItemBean;
-import com.lidroid.xutils.ViewUtils;
-import com.systembartint.SystemBarTintManager;
 
+/**
+ * 菜单activity 父类
+ */
 public abstract class MenuActivity extends BaseFragmentActivity implements IMenuContext {
 
     protected BlurViewPager     pager;
     protected TabPageIndicator  indicator;
+
+    private KCTestLauncher kcTestLauncher;
 
     private MenuBuilder menuBuilder = new MenuBuilder();
 
@@ -28,10 +29,28 @@ public abstract class MenuActivity extends BaseFragmentActivity implements IMenu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TranslucentStatus.setEnable(this);
-
-        ViewUtils.inject(this);
+//        ViewUtils.inject(this);
         initView();
+
+        kcTestLauncher = new KCTestLauncher();
+        kcTestLauncher.start(this);
+
+
+
+    }
+
+    /**
+     * 切换菜单
+     * @param page
+     */
+    public void setMenuPage(Integer page) {
+        indicator.setCurrentItem(page);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        kcTestLauncher.next(this);
     }
 
     private void initView() {
@@ -47,7 +66,6 @@ public abstract class MenuActivity extends BaseFragmentActivity implements IMenu
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Application.exit(this);
     }
 
     @Override

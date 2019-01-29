@@ -1,32 +1,25 @@
 package com.honestwalker.android.commons;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 
 import com.honestwalker.android.fastroid.R;
 import com.honestwalker.androidutils.Application;
 import com.honestwalker.androidutils.IO.LogCat;
+import com.honestwalker.androidutils.UIHandler;
 import com.honestwalker.androidutils.system.ProcessUtil;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import xiaofei.library.hermeseventbus.HermesEventBus;
 
 /**
+ * Application父类，包涵了一些核心功能的加载
  * Created by honestwalker on 15-10-9.
  */
 public class BaseApplication extends android.app.Application  {
 
     public static Context context = null;
 
-    private static Map<Activity,Activity> signinstanceActivity = new HashMap<Activity,Activity>();
-
     public static String appVersion = "";
     public static String appName = "";
-
-    /** 记录程序上一次所在的页面名称 */
-    public static String lastPage = "";
 
     /** 当前数据库版本 */
     private final int DATABASE_VERSION = 1;
@@ -48,30 +41,22 @@ public class BaseApplication extends android.app.Application  {
     private void initApp() {
 
         appName = getResources().getString(R.string.app_name);
-        appVersion = Application.getAppVersion(context, R.class);
+        initHermesEventBus();
+
+        UIHandler.init();
 
     }
 
-    public static void addSingleInstanceActivity(Activity activity) {
-        signinstanceActivity.put(activity, activity);
-    }
-    @SuppressLint("NewApi")
-    public static void clearAllSigninstanceActivity() {
-        Iterator<Map.Entry<Activity, Activity>> iter = signinstanceActivity.entrySet().iterator();
-        while(iter.hasNext()) {
-            Activity act = iter.next().getValue();
-            try {
-                LogCat.d("exit", act.getClass().getSimpleName());
-                act.finish();
-            } catch (Exception e) {
-            }
+    private void initHermesEventBus() {
+        HermesEventBus.getDefault().init(this);
+        if(!ProcessUtil.isMainProcess(this)) {
+            // 非主进程调用该方法
+            HermesEventBus.getDefault().connectApp(this, getPackageName());
         }
     }
 
     public static void exit() {
         Application.exit(context);
-        System.exit(0);
-        clearAllSigninstanceActivity();
     }
 
 }

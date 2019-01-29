@@ -26,8 +26,7 @@ public class ReportErrorSender {
 
 	/// 错误报告相关
 
-//	public static final String debugHost = "http://192.168.1.36:8080";
-	public static final String debugHost = "http://47.88.148.212/log";
+	public static final String debugHost = "http://log.lanzhe.com:8899";
 	public static final String bugServerUrl = debugHost + "/savebug.action";
 	public static final String logServerUrl = debugHost + "/savelog.action";
 	public static final String settingServerUrl = debugHost + "/setting.action";

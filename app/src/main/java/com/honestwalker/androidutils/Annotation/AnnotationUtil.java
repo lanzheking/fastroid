@@ -6,9 +6,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 /**
+ * 注解工具类
  * Created by honestwalker on 15-11-19.
  */
 public class AnnotationUtil {
+
     public static void getAnnoValue(Object obj , Class annoClass) {
         Field[] fields = obj.getClass().getDeclaredFields();
         for(Field f : fields) {
@@ -19,4 +21,5 @@ public class AnnotationUtil {
             }
         }
     }
+
 }

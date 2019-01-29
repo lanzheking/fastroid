@@ -13,6 +13,9 @@ import com.honestwalker.android.fastroid.R;
 import com.honestwalker.androidutils.views.BaseMyViewLinearLayout;
 import com.honestwalker.androidutils.views.QtyView;
 
+/**
+ * 菜单UI 对象
+ */
 public class Menubar extends BaseMyViewLinearLayout {
 
 	public Menubar(Context context) {

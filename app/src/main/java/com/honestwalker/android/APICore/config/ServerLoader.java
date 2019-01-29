@@ -71,9 +71,7 @@ public final class ServerLoader {
      */
     private static void loadScheme(Element elm) {
         Element contextIDELM = elm.getChild("context-id");
-//        Scheme scheme = new Scheme();
         String contextID = contextIDELM.getValue();
-//        scheme.setContextID(contextID);
         config.setScheme(contextID);
     }
 

@@ -2,7 +2,8 @@ package com.honestwalker.android.APICore.IO;
 
 
 import com.honestwalker.android.APICore.API.ParseStrategy.ParseStrategy;
-import com.honestwalker.android.APICore.API.net.RequestMethod;
+
+import org.xutils.http.HttpMethod;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,7 +27,7 @@ public @interface API {
     /** 标识返回数据类型，有Json和字符串，如果是一般字符串，会自动转换成json格式 {"result":"success" , "info":{"字符串"} */
     ResponseMethod responseMethod() default ResponseMethod.JSON;
 
-    RequestMethod requestMethod() default RequestMethod.POST;
+    HttpMethod requestMethod() default HttpMethod.POST;
 
     boolean handleErrorPersonally() default false;
 

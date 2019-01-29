@@ -1,5 +1,6 @@
 package com.honestwalker.androidutils.views;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
@@ -39,6 +40,12 @@ public class AsyncImageView extends ImageView {
 	}
 	public AsyncImageView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		this.context = context;
+		init();
+	}
+	@TargetApi(21)
+	public AsyncImageView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+		super(context, attrs, defStyleAttr, defStyleRes);
 		this.context = context;
 		init();
 	}

@@ -7,6 +7,9 @@ import android.view.animation.TranslateAnimation;
 
 import com.honestwalker.androidutils.equipment.DisplayUtil;
 
+/**
+ * 动画工厂
+ */
 public class AnimationFactory {
 	
 	private Context context;

@@ -68,7 +68,6 @@ public class AsyncImageLoader {
 	
 	public Drawable loadDrawable(final String imageUrl,final int inSampleSize ,
 			final ImageCallback imageCallback) {
-		LogCat.d("AAAAAA", "111111");
 		if(useCache) {
 			if(ImageCacheUtil.existsImageCache(context, imageUrl)) {
 				try{
@@ -81,23 +80,19 @@ public class AsyncImageLoader {
 				return loadDrawableFromUrl(imageUrl,inSampleSize,imageCallback);
 			}
 		} else {
-			LogCat.d("AAAAAA", "2222222222");
 			return loadDrawableFromUrl(imageUrl,inSampleSize,imageCallback);
 		}
 	}
 	
 	private Drawable loadDrawableFromUrl(final String imageUrl,final int inSampleSize ,
 			final ImageCallback imageCallback) {
-		LogCat.d("AAAAAA", "3333333333333");
 		if (imageCache.containsKey(imageUrl)) {
-			LogCat.d("AAAAAA", "4444444444444");
 			SoftReference<Drawable> softReference = imageCache.get(imageUrl);
 			Drawable drawable = softReference.get();
 			if (drawable != null) {
 				return drawable;
 			}
 		}
-		LogCat.d("AAAAAA", "55555555555555");
 		final Handler handler = new Handler() {
 			public void handleMessage(Message message) {
 				imageCallback.imageLoaded((Drawable) message.obj, imageUrl);
@@ -106,7 +101,6 @@ public class AsyncImageLoader {
 		new Thread() {
 			@Override
 			public void run() {
-				LogCat.d("AAAAAA", "6666666666666666");
 				Drawable drawable = loadImageFromUrl(imageUrl,inSampleSize);
 				
 				imageCache.put(imageUrl, new SoftReference<Drawable>(drawable));
@@ -186,62 +180,10 @@ public class AsyncImageLoader {
 			}
 			
 		} catch (Exception e) {
-			LogCat.d("AAAAAA", e.toString());
 			return null;
 		}
 	}
 	
-	/*public static int computeSampleSize(BitmapFactory.Options options,
-			int minSideLength, int maxNumOfPixels) {
-		int initialSize = computeInitialSampleSize(options, minSideLength,
-				maxNumOfPixels);
-
-		int roundedSize;
-		if (initialSize <= 8) {
-			roundedSize = 1;
-			while (roundedSize < initialSize) {
-				roundedSize <<= 1;
-			}
-		} else {
-			roundedSize = (initialSize + 7) / 8 * 8;
-		}
-
-		return roundedSize;
-	}
-
-	private static int computeInitialSampleSize(BitmapFactory.Options options,
-			int minSideLength, int maxNumOfPixels) {
-		double w = options.outWidth;
-		double h = options.outHeight;
-
-		int lowerBound = (maxNumOfPixels == -1) ? 1 : (int) Math.ceil(Math
-				.sqrt(w * h / maxNumOfPixels));
-		int upperBound = (minSideLength == -1) ? 128 : (int) Math.min(Math
-				.floor(w / minSideLength), Math.floor(h / minSideLength));
-
-		if (upperBound < lowerBound) {
-			// return the larger one when there is no overlapping zone.
-			return lowerBound;
-		}
-
-		if ((maxNumOfPixels == -1) && (minSideLength == -1)) {
-			return 1;
-		} else if (minSideLength == -1) {
-			return lowerBound;
-		} else {
-			return upperBound;
-		}
-	}*/
-
-	/*
-	 * public static Drawable loadImageFromUrl(String url) { URL m; InputStream
-	 * i = null; try { m = new URL(url); i = (InputStream) m.getContent(); }
-	 * catch (MalformedURLException e1) { e1.printStackTrace(); } catch
-	 * (IOException e) { e.printStackTrace(); } try { Drawable d =
-	 * Drawable.createFromStream(i, "src"); return d; } catch (Exception e) {
-	 * LogCat.getLog().e(e.toString()); return null; } }
-	 */
-
 	public interface ImageCallback {
 		public void imageLoaded(Drawable imageDrawable, String imageUrl);
 	}

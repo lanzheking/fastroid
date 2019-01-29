@@ -1,21 +1,18 @@
 package com.honestwalker.androidutils.activity.fragment.menubar;
 
-import org.xmlpull.v1.XmlPullParser;
-
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.honestwalker.android.fastroid.R;
-import com.honestwalker.androidutils.StringUtil;
 import com.honestwalker.androidutils.views.BaseMyViewLinearLayout;
 import com.honestwalker.androidutils.views.QtyView;
 
+/**
+ * 菜单UI 对象
+ */
 public class MenubarLayout extends BaseMyViewLinearLayout implements OnClickListener {
 	
 	private final String TAG = "MENU";
@@ -24,7 +21,7 @@ public class MenubarLayout extends BaseMyViewLinearLayout implements OnClickList
 	
 	private QtyView[] qtyView;
 	
-	private View tabViews[];
+	private View 	  tabViews[];
 	private ImageView iconViews[];
 	private TextView  labelTVs[];
 	
