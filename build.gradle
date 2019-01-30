@@ -22,7 +22,7 @@ buildscript {
 apply plugin: 'com.github.dcendents.android-maven'
 
 //apply plugin: 'android-library'
-//apply plugin: 'android-maven'
+apply plugin: 'android-maven'
 
 allprojects {
     repositories {
