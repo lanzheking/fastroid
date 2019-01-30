@@ -3,21 +3,27 @@ package com.honestwalker.androidutils.ImageSelector;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.honestwalker.android.BusEvent.EventBusUtil;
 import com.honestwalker.androidutils.IO.FileIO;
 import com.honestwalker.androidutils.IO.LogCat;
+import com.honestwalker.androidutils.IO.UriUtil;
 import com.honestwalker.androidutils.ImageSelector.BusEvent.EventAction;
 import com.honestwalker.androidutils.ImageSelector.BusEvent.ImageSelectedEvent;
 import com.honestwalker.androidutils.ImageSelector.BusEvent.ImageSelectorCancelEvent;
 import com.honestwalker.androidutils.ImageSelector.BusEvent.ImageSelectorEvent;
+import com.honestwalker.androidutils.ImageSelector.BusEvent.VideoSelectedEvent;
 import com.honestwalker.androidutils.ImageSelector.ImageScan.MultiImageSelectorActivity;
 import com.honestwalker.androidutils.ImageSelector.utils.BroadcaseManager;
 import com.honestwalker.androidutils.ImageSelector.utils.PictureUtil;
@@ -46,6 +52,7 @@ public class ImageSelector {
 	public final static int REQUEST_IMAGE_CUT = 73;
 	public final static int REQUEST_SINGLE_IMAGE_SELECT = 74;
 	public final static int REQUEST_MULTI_IMAGE_SELECT = 75;
+    public final static int REQUEST_VIDEO_SELECT = 76;
 //	public final static int REQUEST_CAMERA = 15479401;
 //	public final static int REQUEST_IMAGE_SELECT = 15479402;
 //	public final static int REQUEST_IMAGE_CUT = 15479403;
@@ -69,7 +76,7 @@ public class ImageSelector {
 	/** 图片压缩的清晰度 */
 	private int quality = 100;
 
-	/** 标示一次任务，用去区分选择任务，可选，选择完毕后的event会带上标示 */
+	/** 标示一次任务，用于区分选择任务，可选，选择完毕后的event会带上标示 */
 	private Object taskTag;
 
 	public ImageSelector(Activity context) {
@@ -121,15 +128,23 @@ public class ImageSelector {
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		intent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, Configuration.ORIENTATION_PORTRAIT);
 
-		Uri cameraOutputPath = null;
-		try {
+		if (Build.VERSION.SDK_INT >= 24) {
+			StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+			StrictMode.setVmPolicy(builder.build());
+		}
+
+		Uri cameraOutputPath;
+		if (Build.VERSION.SDK_INT >= 24){
+			cameraOutputPath = UriUtil.fromFile(new File(outputPath));
+		}else {
 			cameraOutputPath = Uri.fromFile(new File(outputPath));
-		} catch (Exception e) {}
+		}
 
-		LogCat.d(TAG, "outputPath=" + outputPath + " maxWidth=" + maxWidth);
-
+		LogCat.d(TAG, "MediaStore.EXTRA_OUTPUT cameraOutputPath=" + cameraOutputPath);
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraOutputPath);
+
 		keepIntent(intent);
+
 		mContext.startActivityForResult(intent, ImageSelector.REQUEST_CAMERA);
 	}
 
@@ -206,12 +221,32 @@ public class ImageSelector {
 		intent.putExtra("aspectY", aspectY);
 		intent.putExtra("maxWidth" , maxWidth);
 		intent.putExtra("quality" , quality);
-		LogCat.d(TAG, "打开相册: quality=" + quality + " maxWidth=" + maxWidth);
+		LogCat.d(TAG, "打开相册: quality=" + quality + " maxWidth=" + maxWidth + " @ " + mContext);
 
 		mContext.startActivityForResult(
 				Intent.createChooser(intent, "Select Picture"), ImageSelector.REQUEST_IMAGE_SELECT);
 
 	}
+
+    /**
+     * 从相册选择视频
+     */
+    public void selectVideo() {
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("video/*");
+        intent.putExtra("needCut", needCut);
+        intent.putExtra("outputPath" , outputPath);
+        intent.putExtra("aspectX" , aspectX);
+        intent.putExtra("aspectY", aspectY);
+        intent.putExtra("maxWidth" , maxWidth);
+        intent.putExtra("quality" , quality);
+        LogCat.d(TAG, "开始选择视频");
+        mContext.startActivityForResult(
+                Intent.createChooser(intent, "Select Picture"),
+                ImageSelector.REQUEST_VIDEO_SELECT);
+
+    }
 
 	/**
 	 * 单图选择
@@ -339,6 +374,23 @@ public class ImageSelector {
 	}
 
 	/**
+	 * 选择视频后的事件广播
+	 * @param selectedVideoUri
+	 */
+	private void sendSelectedVideoEvent(Uri selectedVideoUri) {
+		VideoSelectedEvent event = new VideoSelectedEvent();
+		event.setVideoUri(selectedVideoUri);
+		String videoPath = "";
+		if(selectedVideoUri.toString().startsWith("content://")) {
+			videoPath = URIUtil.getPathByUri4kitkat(mContext, selectedVideoUri);
+		} else {
+			videoPath = selectedVideoUri.toString().replace("file://" , "");
+		}
+		event.setVideoPath(videoPath);
+		EventBusUtil.getInstance().post(event);
+	}
+
+	/**
 	 * 选择图片成功发送消息
 	 * @param type
 	 * @param selectedImages
@@ -405,6 +457,12 @@ public class ImageSelector {
 				String selectedImagePath = intent.getStringExtra("imgPath");
 				selectedImages.add(selectedImagePath);
 				sendSelectedEvent(type, selectedImages);
+			} else if(requestCode == REQUEST_VIDEO_SELECT) {
+				Uri selectedVideoUri = intent.getData();
+//				selectedImages.add(selectedImagePath);
+//				sendSelectedEvent(type, selectedImages);
+				LogCat.d(TAG, "selectedVideoUri=" + selectedVideoUri);
+				sendSelectedVideoEvent(selectedVideoUri);
 			}
 
 		}
@@ -416,8 +474,8 @@ public class ImageSelector {
 	 * @param requestCode
 	 * @return
 	 */
-	public boolean isImageSelect(int requestCode) {
-		return (requestCode >= ImageSelector.REQUEST_CAMERA) && (requestCode <= REQUEST_MULTI_IMAGE_SELECT);
+	public static boolean isImageSelect(int requestCode) {
+		return (requestCode >= ImageSelector.REQUEST_CAMERA) && (requestCode <= REQUEST_VIDEO_SELECT);
 	}
 
 	private ImageSelectType getTypeByRequestCode(int requestCode) {
@@ -426,13 +484,15 @@ public class ImageSelector {
 			case ImageSelector.REQUEST_IMAGE_SELECT :  return ImageSelectType.TYPE_IMAGE_SELECTOR;
 			case ImageSelector.REQUEST_SINGLE_IMAGE_SELECT :  return ImageSelectType.TYPE_SINGLE_IMAGE_SELECTOR;
 			case ImageSelector.REQUEST_MULTI_IMAGE_SELECT :  return ImageSelectType.TYPE_MULTI_IMAGE_SELECTOR;
+			case ImageSelector.REQUEST_VIDEO_SELECT :  return ImageSelectType.TYPE_VIDEO;
 		}
 		return ImageSelectType.TYPE_UNKNOW;
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		Log.d(TAG, "ImageSelectorAgentActivity OnActivityResult requestCode=" + requestCode + " resultCode=" + resultCode);
+		Log.d(TAG, "ImageSelectorAgentActivity OnActivityResult requestCode=" +
+				requestCode + " resultCode=" + resultCode);
 
         ImageSelectedEvent event = new ImageSelectedEvent();
 		event.setTaskTag(taskTag);
@@ -556,6 +616,8 @@ public class ImageSelector {
 		} else if(ImageSelector.REQUEST_IMAGE_CUT == requestCode) {
 			Log.d(TAG, "图片剪切完毕，outputPath=" + outputPath);
 			intent.putExtra("imgPath", outputPath);
+		} else if(ImageSelector.REQUEST_VIDEO_SELECT == requestCode) {
+			intent.setData(data.getData());
 		}
 
 		onReceive(intent);

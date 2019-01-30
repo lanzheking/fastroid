@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
+import java.io.Serializable;
 
 /**
  * 对储存卡对象流的IO操作
@@ -16,7 +17,7 @@ import java.io.OptionalDataException;
 public class ObjectStreamIO {
 	
 	
-	public synchronized static Object output(String dir,Object obj,Object name) throws IOException {
+	public synchronized static Object output(String dir, Object obj, Object name) throws IOException {
 		dir = fixDir(dir);
 		File file = new File(dir + name);
 		FileOutputStream fos = new FileOutputStream(file);

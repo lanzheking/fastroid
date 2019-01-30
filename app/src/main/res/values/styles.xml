@@ -28,6 +28,26 @@
         <item name="android:textColor">#333333</item>
     </style>
 
+    <style name="toast_dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item><!--边框-->
+        <item name="android:windowIsFloating">true</item><!--是否浮现在activity之上-->
+        <item name="android:windowIsTranslucent">false</item><!--半透明-->
+        <item name="android:windowNoTitle">true</item><!--无标题-->
+        <item name="android:windowBackground">@color/transparent</item><!--背景透明-->
+        <item name="android:backgroundDimEnabled">false</item><!--模糊-->
+    </style>
+    <!--<style name="toast_dialog" parent="Animation.AppCompat.Dialog">-->
+        <!--<item name="android:windowFrame">@null</item>-->
+        <!--&lt;!&ndash;最后面是window background&ndash;&gt;-->
+        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
+        <!--<item name="android:windowNoTitle">false</item>-->
+        <!--&lt;!&ndash;这个不设置它会沾满屏幕&ndash;&gt;-->
+        <!--<item name="android:windowIsFloating">true</item>-->
+        <!--<item name="android:windowContentOverlay">@null</item>-->
+        <!--&lt;!&ndash; 设置contentview的背景图&ndash;&gt;-->
+        <!--<item name="android:background">@null</item>-->
+    <!--</style>-->
+
     <style name="CustomDialog" parent="android:style/Theme.Dialog">
         <!--背景颜色及透明程度-->
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -39,6 +59,7 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+    <!--<style name="AppTheme" parent="android:Theme.Translucent.NoTitleBar" />-->
     <style name="AppTheme" parent="android:Theme.Translucent.NoTitleBar" />
 
     <style name="dialogWindowAnim" mce_bogus="1" parent="android:Animation">
@@ -52,6 +73,15 @@
         <!--<item name="android:windowIsTranslucent">true</item>-->
     </style>
 
+    <style name="input_dialog_styles" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:background">@color/none</item>
+        <item name="android:windowBackground">@color/none</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
 
     <!-- ================ 自体大小规范 ==================== -->
     <style name="base_text_size_a1">
@@ -125,5 +155,21 @@
         <item name="android:background">@drawable/xmlbtn_blue_right_angle</item>
         <item name="android:textColor">@color/white</item>
     </style>
+
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+  <!--  <style name="AppTheme" parent="AppBaseTheme">
+        &lt;!&ndash; All customizations that are NOT specific to a particular API-level can go here. &ndash;&gt;
+    </style>
+-->
+
 
 </resources>

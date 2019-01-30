@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 注入View
  * Created by lanzhe on 17-7-24.
  */
 @Target({ElementType.FIELD})

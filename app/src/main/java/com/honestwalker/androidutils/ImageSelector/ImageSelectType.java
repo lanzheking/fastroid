@@ -17,6 +17,8 @@ public enum ImageSelectType  {
 	TYPE_IMAGE_CUT,
 	/** 取消 */
 	TYPE_CANCEL,
+	/** 视频 */
+	TYPE_VIDEO,
 	/** 未知类型 */
 	TYPE_UNKNOW
 

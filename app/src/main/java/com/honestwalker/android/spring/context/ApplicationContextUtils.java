@@ -2,16 +2,21 @@ package com.honestwalker.android.spring.context;
 
 
 import android.content.Context;
-import android.util.Log;
 
+import com.honestwalker.android.fastroid.R;
 import com.honestwalker.android.spring.core.annotation.Autowired;
 import com.honestwalker.android.spring.core.annotation.Component;
-import com.honestwalker.android.spring.core.bean.Scope;
+import com.honestwalker.android.spring.core.annotation.LazyInit;
+import com.honestwalker.android.spring.core.annotation.Scope;
+import com.honestwalker.android.spring.core.bean.ConstructorArg;
+import com.honestwalker.android.spring.core.bean.PckBean;
+import com.honestwalker.android.spring.core.bean.ScopeType;
 import com.honestwalker.android.spring.core.bean.SpringBean;
 import com.honestwalker.android.spring.core.exception.BeanInjectError;
 import com.honestwalker.android.spring.core.utils.PckScanner;
-import com.honestwalker.androidutils.Application;
+import com.honestwalker.android.spring.exception.BeanRepeatException;
 import com.honestwalker.androidutils.IO.LogCat;
+import com.honestwalker.androidutils.IO.ObjectStreamIO;
 import com.honestwalker.androidutils.StringUtil;
 import com.honestwalker.androidutils.exception.ExceptionUtil;
 
@@ -23,8 +28,10 @@ import org.jdom.input.SAXBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -32,37 +39,64 @@ import java.util.List;
  */
 public class ApplicationContextUtils {
 
+    private static String TAG = "Spring";
+
     private static Context appContext;
 
-//    private static ApplicationContext applicationContext;
+    private static ApplicationContext applicationContext;
 
-    private static InputStream applicationContextIn;
-
-    private static List<String> scanPck = new ArrayList<>();
+    private static List<PckBean> scanPck = new ArrayList<>();
 
     public static void init(Context context, InputStream applicationContextIn) {
-        ApplicationContextUtils.applicationContextIn = applicationContextIn;
+        applicationContext = new AndroidApplicationContext();
         ApplicationContextUtils.appContext = context;
-        ApplicationContext.putSingletonBeanMapping("applicationContext", context);
         try {
+            applicationContext.putSingletonBeanMapping("applicationContext", context);
+        } catch (BeanRepeatException e) {
+            ExceptionUtil.showException("Spring", e);
+        }
+
+        long start = System.currentTimeMillis();
+
+//        AndroidBeanFactory androidBeanFactory = (AndroidBeanFactory) applicationContext.getBeanFactory();
+//        boolean existApplicationContextObject = ObjectStreamIO.existsObjectStream(context.getCacheDir().getPath(), "ApplicationContext");
+//        if(existApplicationContextObject) {
+//            LogCat.d("Spring", "==============spring 已经缓存=============");
+//            try {
+//                HashMap<String, SpringBean> springBeans = (HashMap<String, SpringBean>) ObjectStreamIO.input(context.getCacheDir().getPath(), "ApplicationContext");
+//                for (String beanId : springBeans.keySet()) {
+//                    SpringBean springBean = springBeans.get(beanId);
+//                    LogCat.d("Spring", beanId + " = " + springBean.getClassPath());
+//                }
+//                androidBeanFactory.setSpringBeans(springBeans);
+//            } catch (Exception e) {
+//                ExceptionUtil.showException("Spring", e);
+//            }
+//        } else {
+//
+//
+//        }
+
+        InputStream basicApplicationContextIn = context.getResources().openRawResource(R.raw.basic_application_context);
+        try {
+            LogCat.d("Spring", "读取Basic Application Context");
+            readConfig(basicApplicationContextIn);
+            LogCat.d("Spring", "读取App Application Context");
             readConfig(applicationContextIn);
+//            HashMap<String, SpringBean> springBeanHashMap = androidBeanFactory.getSpringBeans();
+//            ObjectStreamIO.output(context.getCacheDir().getPath(), springBeanHashMap, "ApplicationContext");
         } catch (Exception e) {
             ExceptionUtil.showException("Spring", e);
             throw new BeanInjectError("解析application context 失败。");
         }
+
+        LogCat.d("Spring", "Spring 处理完毕，耗时：" + (System.currentTimeMillis() - start) + " 毫秒");
+
     }
 
     public static void init(Context context, int applicationContextResId) {
-        ApplicationContextUtils.applicationContextIn = context.getResources().openRawResource(applicationContextResId);
-        ApplicationContextUtils.appContext = context;
-
-        ApplicationContext.putSingletonBeanMapping("applicationContext", context);
-        try {
-            readConfig(applicationContextIn);
-        } catch (Exception e) {
-            ExceptionUtil.showException("Spring", e);
-            throw new BeanInjectError("解析application context 失败。");
-        }
+        InputStream applicationContextIn = context.getResources().openRawResource(applicationContextResId);
+        init(context, applicationContextIn);
     }
 
     /**
@@ -84,55 +118,38 @@ public class ApplicationContextUtils {
                     Autowired autowired = field.getAnnotation(Autowired.class);
                     if(autowired == null) continue;
                     Class fieldType = field.getType();
-                    Log.d("Spring", "fieldType=" + fieldType);
                     Object instance;
                     if(autowired.value() == null || "".equals(autowired.value().trim())) {
-                        instance = ApplicationContext.getBean(field.getName());
+                        instance = applicationContext.getBean(field.getName());
                     } else {
-                        instance = ApplicationContext.getBean(autowired.value());
+                        instance = applicationContext.getBean(autowired.value());
                     }
                     if(instance == null) {
                         instance = fieldType.newInstance();
-                        LogCat.d("Spring", " -- " + instance);
                     }
-
                     inject(instance);
-
                     field.set(object, instance);
                 } catch (Exception e) {}
             }
-
             currentClass = currentClass.getSuperclass();
-
-            LogCat.d("SCAN", "supper = " + currentClass);
-
-
         }
 
     }
 
-//    public static ApplicationContext getApplicationContext() {
-//        if(applicationContext == null) {
-//            applicationContext = new ApplicationContext();
-//        } else {
-//            return applicationContext;
-//        }
-//        try {
-//            readConfig(applicationContextIn);
-//        } catch (Exception e) {
-//            ExceptionUtil.showException("Spring", e);
-//            throw new BeanInjectError("解析application context 失败。");
-//        }
-//        return applicationContext;
-//    }
+    public static ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
 
     private final static String NODE_COMPONENT_SCAN = "component-scan";
     private final static String NODE_BEAN = "bean";
     private final static String NODE_PROPERTY = "property";
-
+    private final static String NODE_CONSTRUCTOR_ARG = "constructor-arg";
     private final static String ATTR_BASE_PACKAGE = "base-package";
+    private final static String ATTR_LAZY_INIT = "lazy-init";
+    private final static String ATTR_SCOPE = "scope";
 
     private static void readConfig(InputStream applicationContextIn) throws JDOMException, IOException {
+        LogCat.d("Spring", "--------------readConfig");
         SAXBuilder sb = new SAXBuilder();
         Document doc = sb.build(applicationContextIn);//读入指定文件
         Element root = doc.getRootElement();//获得根节点
@@ -140,60 +157,135 @@ public class ApplicationContextUtils {
         for (Element element : list) {
             String nodeName = element.getName();
             if(NODE_COMPONENT_SCAN.equals(nodeName)) {
+                LogCat.d(TAG, "包节点 " + element.getAttributeValue(ATTR_BASE_PACKAGE));
                 componentScanNode(element);
             } else if(NODE_BEAN.equals(nodeName)) {
+                LogCat.d(TAG, "bean节点 " + element.getAttributeValue("class"));
                 beanNode(element);
             }
         }
-        for (String pck : scanPck) {
+        for (PckBean pck : scanPck) {
             scan(pck);
         }
     }
 
     private static void componentScanNode(Element element) {
+        PckBean pckBean = new PckBean();
         String basePackage = element.getAttribute(ATTR_BASE_PACKAGE).getValue();
-        addScanPck(basePackage);
+        pckBean.setPck(basePackage);
+        addScanPck(pckBean);
     }
 
     private static void beanNode(Element element) {
-        Attribute scapeAttr = element.getAttribute("scope");
-        String scope = scapeAttr == null ? Scope.prototype.toString() : scapeAttr.getValue();
+        Attribute scapeAttr = element.getAttribute(ATTR_SCOPE);
+        Attribute lazyInitAttr = element.getAttribute(ATTR_LAZY_INIT);
+
+        String xmlScopeValue = scapeAttr == null ?
+                               ScopeType.prototype.toString() :
+                               scapeAttr.getValue();
+
         String classPath = element.getAttribute("class").getValue();
-        String name = null;
-        if(element.getAttribute("name") != null && !"".equals(element.getAttribute("name").getValue().trim())) {
-            name = element.getAttribute("name").getValue().trim();
+        String id = null;
+        if(element.getAttribute("id") != null &&
+                !"".equals(element.getAttribute("id").getValue().trim())) {
+            id = element.getAttribute("id").getValue().trim();
         }
-        if(name == null) {
-            name = getBeanNameByClass(classPath);
+        if(id == null) {
+            id = getBeanIdByClass(classPath);
         }
         SpringBean springBean = new SpringBean();
         springBean.setClassPath(classPath);
-        springBean.setScope(Scope.singleton.toString().equals(scope) ? Scope.singleton : Scope.prototype);
+        // bean 可以通过xml或者注解设置 scope， 以注解优先， 同时存在注解的scope生效
+        ScopeType mScopeType = null;
+        try {
+            Class beanClass = Class.forName(classPath);
+            Scope annoScopeValue = (Scope) beanClass.getAnnotation(Scope.class);
+            if(annoScopeValue != null) {
+                mScopeType = annoScopeValue.value();
+            }
+
+            boolean lazyInit = true;
+            LazyInit lazyInitAnno = (LazyInit) beanClass.getAnnotation(LazyInit.class);
+            if(lazyInitAnno != null) {
+                lazyInit = lazyInitAnno.value();
+            } else if(lazyInitAttr != null) {
+                try {
+                    lazyInit = lazyInitAttr.getBooleanValue();
+                } catch (Exception e) {}
+            }
+            springBean.setLazyInit(lazyInit);
+
+        } catch (Exception e) {
+        }
+
+        if(mScopeType == null) {
+            mScopeType = ScopeType.singleton.toString().equals(xmlScopeValue) ?
+                         ScopeType.singleton :
+                         ScopeType.prototype;
+        }
+        springBean.setScope(mScopeType);
 
         List<Element> propertyList = element.getChildren();
         if(propertyList != null && propertyList.size() > 0) {
-            LogCat.d("Spring", "bean=====" + name);
+            LogCat.d("Spring", "bean=====" + id);
             for (int i = 0; i < propertyList.size(); i++) {
                 Element propertyElement = propertyList.get(i);
-                if(!NODE_PROPERTY.equals(propertyElement.getName())) continue;
-                String propertyName = propertyElement.getAttribute("name").getValue();
-                if(hasAttribute(propertyElement, "value")) {
-                    String propertyValue = propertyElement.getAttribute("value").getValue();
-                    springBean.getFieldType().put(propertyName, FieldType.value);
-                    LogCat.d("Spring" , "value=======" + propertyValue);
-                    springBean.getFieldValueMapping().put(propertyName, propertyValue);
-                } else if(hasAttribute(propertyElement, "ref")) {
-                    String propertyRef = propertyElement.getAttribute("ref").getValue();
-                    springBean.getFieldType().put(propertyName, FieldType.ref);
-                    LogCat.d("Spring" , "ref=======" + propertyRef);
-                    springBean.getFieldValueMapping().put(propertyName, propertyRef);
+
+                if(NODE_PROPERTY.equals(propertyElement.getName())) {
+                    String propertyName = propertyElement.getAttribute("id").getValue();
+                    if(hasAttribute(propertyElement, "value")) {
+                        String propertyValue = propertyElement.getAttribute("value").getValue();
+                        springBean.getFieldType().put(propertyName, FieldType.value);
+                        LogCat.d("Spring" , "   设置属性 " + propertyName + "========" + propertyValue);
+                        springBean.getFieldValueMapping().put(propertyName, propertyValue);
+                    } else if(hasAttribute(propertyElement, "ref")) {
+                        String propertyRef = propertyElement.getAttribute("ref").getValue();
+                        springBean.getFieldType().put(propertyName, FieldType.ref);
+                        LogCat.d("Spring" , "   设置属性 " + propertyName + " ref =======" + propertyRef);
+                        springBean.getFieldValueMapping().put(propertyName, propertyRef);
+                    }
+                } else if(NODE_CONSTRUCTOR_ARG.equals(propertyElement.getName())) {
+                    if(hasAttribute(propertyElement, "value")) {
+                        String propertyValue = propertyElement.getAttribute("value").getValue();
+                        String propertyType = propertyElement.getAttribute("type").getValue();
+                        ConstructorArg constructorArg;
+                        try {
+                            constructorArg = new ConstructorArg(propertyValue, Class.forName(propertyType), FieldType.value);
+                        } catch (Exception e) {
+                            constructorArg = new ConstructorArg(propertyValue, Object.class, FieldType.value);
+                        }
+                        springBean.getConstructorArgMapping().put(i + "", constructorArg);
+                    } else if(hasAttribute(propertyElement, "ref")) {
+                        String propertyRef = propertyElement.getAttribute("ref").getValue();
+                        ConstructorArg constructorArg = new ConstructorArg(propertyRef, null, FieldType.ref);
+                        springBean.getConstructorArgMapping().put(i + "", constructorArg);
+                    }
                 }
             }
         } else {
-            LogCat.d("Spring", name + " 不包含 property");
+            LogCat.d("Spring", id + " 不包含 property");
         }
 
-        putSingleInstanceBean(name, springBean);
+        LogCat.d("Spring", id + " springBean.isLazyInit() " + springBean.isLazyInit());
+        if(!springBean.isLazyInit()) {
+            try {
+                Object bean = Class.forName(springBean.getClassPath());
+                applicationContext.putSingletonBeanMapping(id, bean);
+                LogCat.d("Spring", "添加bean : " + id + "  " + springBean.getClassPath() + " bean=" + bean);
+                inject(bean);
+            } catch (ClassNotFoundException e) {
+                ExceptionUtil.showException("Spring", e);
+            } catch (BeanRepeatException e) {
+                ExceptionUtil.showException("Spring", e);
+            }
+        } else {
+            LogCat.d("Spring", "添加bean : " + id + "  " + springBean.getClassPath());
+            try {
+                applicationContext.putBeanMapping(id, springBean);
+            } catch (BeanRepeatException e) {
+                ExceptionUtil.showException("Spring", e);
+            }
+        }
     }
 
     private static boolean hasAttribute(Element element, String attributeName) {
@@ -205,19 +297,10 @@ public class ApplicationContextUtils {
         }
     }
 
-    private static void addScanPck(String pck) {
+    private static void addScanPck(PckBean pck) {
         if(scanPck.contains(pck)) return;
-        LogCat.d("SPRING", "添加 " + pck + " 的扫描");
+        LogCat.d(TAG, "添加 " + pck + " 的扫描");
         scanPck.add(pck);
-    }
-
-    private static void putSingleInstanceBean(String beanName, SpringBean springBean) {
-//        if(ApplicationContext.containsBean(beanName)) {
-//            LogCat.e("SPRING", beanName + " 重复的bean name");
-//            throw new BeanInjectError("Bean name \"" + beanName + "\" has exists.");
-//        }
-        LogCat.d("SPRING", "添加bean : " + beanName + "  " + springBean.getClassPath());
-        ApplicationContext.putBeanMapping(beanName, springBean);
     }
 
     /**
@@ -225,38 +308,55 @@ public class ApplicationContextUtils {
      * @param classPath
      * @return
      */
-    private static String getBeanNameByClass(String classPath) {
-        String name = "";
+    private static String getBeanIdByClass(String classPath) {
+        String id = "";
         if(classPath.indexOf(".") > -1) {
-            name = classPath.substring(classPath.lastIndexOf(".") + 1);
+            id = classPath.substring(classPath.lastIndexOf(".") + 1);
         } else {
-            name = classPath;
+            id = classPath;
         }
-        name = name.substring(0, 1).toLowerCase() + name.substring(1);
-        return name;
+        id = id.substring(0, 1).toLowerCase() + id.substring(1);
+        return id;
     }
 
-    private static void scan(String pck) {
-        List<String> classes = PckScanner.getClassName(appContext, pck, true);
+    /**
+     * 扫描注入包下的bean
+     * @param pck
+     */
+    private static void scan(PckBean pck) {
+        LogCat.d("Spring", "扫描 " + pck.getPck());
+        List<String> classes = PckScanner.getClassName(appContext, pck.getPck());
         for (String aClassName : classes) {
             try {
                 Class aClass = Class.forName(aClassName);
                 Component component = (Component) aClass.getAnnotation(Component.class);
-                String name =  component == null ? getBeanNameByClass(aClass.getName()) : component.value();
-                if(StringUtil.isEmptyOrNull(name)) {
-                    name = getBeanNameByClass(aClass.getName());
+                Scope scope = (Scope) aClass.getAnnotation(Scope.class);
+                LazyInit lazyInit = (LazyInit) aClass.getAnnotation(LazyInit.class);
+                String id =  component == null ? getBeanIdByClass(aClass.getName()) : component.value();
+                if(StringUtil.isEmptyOrNull(id)) {
+                    id = getBeanIdByClass(aClass.getName());
                 }
                 SpringBean springBean = new SpringBean();
-                springBean.setScope(component == null ? Scope.prototype : component.scope());
+                springBean.setScope(scope == null ? ScopeType.prototype : scope.value());
                 springBean.setClassPath(aClass.getName());
+                springBean.setLazyInit(lazyInit == null ? true : lazyInit.value());
 
-                if(!ApplicationContext.containsBean(name)) {
-                    putSingleInstanceBean(name, springBean);
+                if(!springBean.isLazyInit()) { // 非懒加载，启动app就实例化，作为单例存放
+                    springBean.setScope(ScopeType.singleton);
+
+                    Object bean = aClass.newInstance();
+
+                    inject(bean);
+                    applicationContext.putSingletonBeanMapping(id, bean);
+                } else {
+                    applicationContext.putBeanMapping(id, springBean);
                 }
 
-            } catch (Exception e){
+            } catch (BeanRepeatException e){
+                ExceptionUtil.showException("Spring", e);
                 ExceptionUtil.showException(e);
-                throw new BeanInjectError("解析 " + aClassName + " 错误");
+            } catch (Exception e){
+                throw new BeanInjectError(e.getMessage() + "\r\n解析 " + aClassName);
             }
         }
     }

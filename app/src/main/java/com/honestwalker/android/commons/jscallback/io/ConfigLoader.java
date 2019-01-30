@@ -80,7 +80,6 @@ public class ConfigLoader {
             bean.setKey(actionKey);
             return bean;
         } catch (Exception e) {
-            Log.e("TEST" , e.toString());
             return null;
         }
     }

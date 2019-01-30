@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 防止JS API连续执行，一般用于防止前端连点击触发
  * Created by lanzhe on 17-10-17.
  */
 @Target({ElementType.TYPE})
@@ -14,6 +15,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface PreventRepeating {
 
+    /** 间隔时间， 小于这个时间，视为连续触发 */
     int value() default 400;
 
 }

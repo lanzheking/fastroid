@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true"
+    android:orientation="vertical">
+
+    <com.honestwalker.androidutils.views.PhotoView.PhotoView
+        android:id="@id/imageview1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
+
+    <com.honestwalker.androidutils.views.PhotoView.PhotoGifView
+        android:id="@id/imageview2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
+
+    <!-- 后退按钮 -->
+    <RelativeLayout
+        android:id="@id/btn1"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:clickable="true">
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/broseimage_back_btn_bg"
+            />
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -21,6 +21,7 @@ public class Application {
     public Application(Context context){
         mContext = context;  
     }
+
     /**
      * 退出应用程序
      */
@@ -33,7 +34,19 @@ public class Application {
 		}
 		System.exit(0);
 		ProcessUtil.killMyProcess();
-    }  
+    }
+
+	/**
+	 * 退出应用程序
+	 */
+	public static void toDesktop(Context context){
+		if(context.getPackageName().equals(ProcessUtil.getCurProcessName(context))) {
+			Intent startMain = new Intent(Intent.ACTION_MAIN);
+			startMain.addCategory(Intent.CATEGORY_HOME);
+			startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			context.startActivity(startMain);
+		}
+	}
     
     /**
      * 获取本地app版本

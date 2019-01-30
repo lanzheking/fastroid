@@ -23,8 +23,11 @@ public class ViewInjector implements Injector {
         ViewInject viewInject = field.getAnnotation(ViewInject.class);
         if(viewInject == null) return;
         Object view = contentView.findViewById(viewInject.value());
-        Log.d("Spring", "view=" + view);
         field.set(object, view);
+        VisibilityGone visibilityGone = field.getAnnotation(VisibilityGone.class);
+        if(visibilityGone != null && view != null) {
+            ((View)view).setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -32,8 +35,11 @@ public class ViewInjector implements Injector {
         ViewInject viewInject = field.getAnnotation(ViewInject.class);
         if(viewInject == null) return;
         Object view = activity.findViewById(viewInject.value());
-        Log.d("Spring", "view=" + view);
         field.set(activity, view);
+        VisibilityGone visibilityGone = field.getAnnotation(VisibilityGone.class);
+        if(visibilityGone != null && view != null) {
+            ((View)view).setVisibility(View.GONE);
+        }
     }
 
     public void injectEvent(Activity activity) {
@@ -42,11 +48,9 @@ public class ViewInjector implements Injector {
         if (methods != null && methods.length > 0) {
             for (Method method : methods) {
 
-                LogCat.d("TEST", "11111111111 " + method.getName());
                 if (Modifier.isStatic(method.getModifiers())) {
                     continue;
                 }
-                LogCat.d("TEST", "2222222222222");
 
                 //检查当前方法是否是event注解的方法
                 EventBase baseEvent = null;

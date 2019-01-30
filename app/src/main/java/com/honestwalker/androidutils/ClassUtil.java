@@ -2,6 +2,11 @@ package com.honestwalker.androidutils;
 
 import android.util.Log;
 
+import com.honestwalker.androidutils.IO.LogCat;
+import com.honestwalker.androidutils.exception.ExceptionUtil;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -18,11 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import com.honestwalker.androidutils.IO.LogCat;
-import com.honestwalker.androidutils.exception.ExceptionUtil;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Class对象工具类，主要用于反射等相关辅助
@@ -502,20 +502,40 @@ public class ClassUtil {
 		}
 	}
 
+	public static <T> Object getValueByType(Object value, Class<T> type) {
+		if(value == null) return null;
+		if(!type.equals(value.getClass())) {
+			if(type.equals(String.class)) {
+				return value + "";
+			} else if(type.equals(Integer.class) || type.getName().equals("int")) {
+				return Integer.parseInt(value + "");
+			} else if(type.equals(Float.class) || type.getName().equals("float")) {
+				return Float.parseFloat(value + "");
+			} else if(type.equals(Double.class) || type.getName().equals("double")) {
+				return Double.parseDouble(value + "");
+			} else if(type.equals(Boolean.class) || type.getName().equals("boolean")) {
+				return Boolean.parseBoolean(value + "");
+			} else if(type.equals(Long.class) || type.getName().equals("long")) {
+				return Long.parseLong(value + "");
+			}
+		}
+		return (T)value;
+	}
+
 	private  static void setFieldValueByType(Field field, Object object, Object value) throws Exception {
 		if(value == null) return;
-		LogCat.d("config", "Field " + field.getName() + " Type:" + field.getType());
-		LogCat.d("config", "Value " + value + " Type:" + value.getClass());
 		if(!field.getType().equals(value.getClass())) {
 			if(field.getType().equals(String.class)) {
 				field.set(object, value + "");
-			} else if(field.getType().equals(Integer.class)) {
+			} else if(field.getType().equals(Integer.class) || field.getType().getName().equals("int")) {
 				field.set(object, Integer.parseInt(value + ""));
-			} else if(field.getType().equals(Float.class)) {
+			} else if(field.getType().equals(Float.class) || field.getType().getName().equals("float")) {
 				field.set(object, Float.parseFloat(value + ""));
-			} else if(field.getType().equals(Double.class)) {
+			} else if(field.getType().equals(Double.class) || field.getType().getName().equals("double")) {
 				field.set(object, Double.parseDouble(value + ""));
-			} else if(field.getType().equals(Long.class)) {
+			} else if(field.getType().equals(Boolean.class) || field.getType().getName().equals("boolean")) {
+				field.set(object, Boolean.parseBoolean(value + ""));
+			} else if(field.getType().equals(Long.class) || field.getType().getName().equals("long")) {
 				field.set(object, Long.parseLong(value + ""));
 			} else {
 				try {

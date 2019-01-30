@@ -1,7 +1,6 @@
 package com.honestwalker.android.BusEvent;
 
-import android.content.Context;
-
+import com.honestwalker.android.spring.context.ApplicationContextUtils;
 import com.honestwalker.androidutils.IO.LogCat;
 
 import xiaofei.library.hermeseventbus.HermesEventBus;
@@ -13,12 +12,11 @@ import xiaofei.library.hermeseventbus.HermesEventBus;
 
 public abstract class BusEventAction implements IBusEventAction {
 
-    protected Context context;
-
-    protected BusEventAction(Context context) {
-        this.context = context;
+    protected BusEventAction() {
         LogCat.d("BusEvent", "注册:" + this);
-        HermesEventBus.getDefault().register(this);
+        ApplicationContextUtils.inject(this);
+
+        EventBusUtil.getInstance().register(this);
     }
 
     public void unRegisterBusEvent() {
@@ -26,10 +24,6 @@ public abstract class BusEventAction implements IBusEventAction {
             LogCat.d("BusEvent", "反注册:" + this);
             HermesEventBus.getDefault().unregister(this);
         }
-    }
-
-    public Context getContext() {
-        return context;
     }
 
 }

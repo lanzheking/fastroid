@@ -7,10 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 表示JS Action 在主线程执行
+ * 表示JS Action 在主线程执行，参见AOP com.honestwalker.android.AOP.RunInUIThreadAspect
  * Created by lanzhe on 17-10-17.
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RunInMainThread {

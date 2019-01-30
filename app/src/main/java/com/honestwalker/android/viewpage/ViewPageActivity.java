@@ -119,7 +119,7 @@ public class ViewPageActivity extends BaseActivity {
                 Class viewPageClass = Class.forName(viewPageClassName);
                 viewPage = (ViewPageSupport) viewPageClass.newInstance();
             } else if(!StringUtil.isEmptyOrNull(viewPageBeanName)) {
-                viewPage = (ViewPageSupport) ApplicationContext.getBean(viewPageBeanName);
+                viewPage = (ViewPageSupport) ApplicationContextUtils.getApplicationContext().getBean(viewPageBeanName);
             }
             viewPage.init(this);
 

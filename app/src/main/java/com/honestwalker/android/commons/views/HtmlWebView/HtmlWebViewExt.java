@@ -13,14 +13,11 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.honestwalker.android.commons.bean.JSParam;
-import com.honestwalker.android.BusEvent.event.WebPageFinishedEvent;
 import com.honestwalker.android.fastroid.R;
 import com.honestwalker.androidutils.IO.LogCat;
 import com.honestwalker.androidutils.UIHandler;
 import com.honestwalker.androidutils.ViewUtils.ViewSizeHelper;
 import com.honestwalker.androidutils.views.BaseMyViewRelativeLayout;
-
-import xiaofei.library.hermeseventbus.HermesEventBus;
 
 /**
  * Created by honestwalker on 15-7-22.
@@ -159,7 +156,7 @@ public class HtmlWebViewExt extends BaseMyViewRelativeLayout {
                 networkErrorView.setVisibility(View.GONE);
             }
             hasError = false;
-            HermesEventBus.getDefault().post(new WebPageFinishedEvent(webView, url));
+//            HermesEventBus.getDefault().post(new WebPageFinishedEvent(webView, url));
         }
 
         @Override

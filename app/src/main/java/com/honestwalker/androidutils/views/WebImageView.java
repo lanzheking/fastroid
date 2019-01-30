@@ -156,9 +156,7 @@ public class WebImageView extends WebView {
 				@Override
 				public void run() {
 					
-					LogCat.d("home_image","222222222222222");
 					String imgCode = htmlBase.replace("{htmlCharset}", charset).replace("{htmlBody}", "<img src='" + imgUrl + "' width='" + screenWidth + "' />");
-					LogCat.d("home_image","33333 imgCode=" + imgCode);
 					Message msg = new Message() ;
 					msg.obj = imgCode;
 					msg.what = 1;

@@ -13,17 +13,22 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import com.honestwalker.android.BusEvent.EventBusUtil;
-import com.honestwalker.android.BusEvent.event.WebProgressChangedEvent;
-import com.honestwalker.android.commons.jscallback.actions.JSCallbackObject;
+import com.google.gson.Gson;
 import com.honestwalker.android.commons.bean.JSParam;
+import com.honestwalker.android.commons.jscallback.actions.JSCallbackObject;
 import com.honestwalker.android.x5engine.FileChooser;
+import com.honestwalker.android.x5engine.InterceptRequest;
+import com.honestwalker.android.x5engine.OnOpenFileChooser;
+import com.honestwalker.android.x5engine.X5WebResourceLoadCallback;
 import com.honestwalker.androidutils.IO.LogCat;
 import com.honestwalker.androidutils.UIHandler;
 import com.tencent.smtt.export.external.interfaces.ConsoleMessage;
 import com.tencent.smtt.export.external.interfaces.JsPromptResult;
 import com.tencent.smtt.export.external.interfaces.JsResult;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
+import com.tencent.smtt.export.external.interfaces.WebResourceError;
+import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
+import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
 import com.tencent.smtt.sdk.QbSdk;
 import com.tencent.smtt.sdk.ValueCallback;
 import com.tencent.smtt.sdk.WebChromeClient;
@@ -32,9 +37,13 @@ import com.tencent.smtt.sdk.WebSettings.LayoutAlgorithm;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class X5WebView extends WebView {
 
-	private Activity context;
+	private Context context;
 
 	public static final int REQUEST_CODE_Choose_FILE = 101;
 
@@ -48,14 +57,22 @@ public class X5WebView extends WebView {
 
 	private FileChooser fileChooser;
 
-	public X5WebView(Context arg0) {
-		super(arg0);
+	private OnOpenFileChooser onOpenFileChooser;
+
+	private List<InterceptRequest> interceptRequests = new ArrayList<>();
+
+	private X5WebResourceLoadCallback x5WebResourceLoadCallback;
+
+	public X5WebView(Context context) {
+		super(context);
+		this.context = context;
 		setBackgroundColor(85621);
 	}
 
 	@SuppressLint("SetJavaScriptEnabled")
 	public X5WebView(Context context, AttributeSet arg1) {
 		super(context, arg1);
+		this.context = context;
 		initWebViewSettings();
 		this.getView().setClickable(true);
 		String x5UserAgent = "";
@@ -65,36 +82,96 @@ public class X5WebView extends WebView {
 		this.getSettings().setUserAgent(this.getSettings().getUserAgentString() + x5UserAgent);
 		super.setWebChromeClient(webChromeClient);
 		super.setWebViewClient(webViewClient);
-		setJSCallback();
 		fileChooser = new FileChooser((Activity) context, this);
 	}
 
 	private WebViewClient webViewClient = new WebViewClient() {
 
 		@Override
+		public void onReceivedError(WebView webView, WebResourceRequest webResourceRequest, WebResourceError webResourceError) {
+			super.onReceivedError(webView, webResourceRequest, webResourceError);
+			LogCat.d("X5E", "Load error " + webResourceRequest.getUrl() +
+					" code=" + webResourceError.getErrorCode() + " " + webResourceError.getDescription());
+		}
+
+		@Override
 		public void onLoadResource(WebView webView, String url) {
 			super.onLoadResource(webView, url);
+			if(x5WebResourceLoadCallback != null) {
+				if (x5WebResourceLoadCallback.onLoadResource(webView, url)) {
+					return;
+				}
+			}
 		}
 
 		@Override
 		public void onPageStarted(WebView webView, String url, Bitmap bitmap) {
 			super.onPageStarted(webView, url, bitmap);
+			LogCat.d("X5", "start " + url);
+//			HermesEventBus.getDefault().post(new WebPageStartEvent((X5WebView) webView, url));
+			if(x5WebResourceLoadCallback != null) {
+				if (x5WebResourceLoadCallback.onPageStarted(webView, url, bitmap)) {
+					return;
+				}
+			}
 		}
 
 		@Override
 		public void onPageFinished(WebView webView, String url) {
+
+			LogCat.d("X5", "complate " + url);
+//			HermesEventBus.getDefault().post(new WebPageFinishedEvent((X5WebView) webView, url));
+			if (x5WebResourceLoadCallback != null) {
+				if (x5WebResourceLoadCallback.onPageFinished(webView, url)) {
+					return;
+				}
+			}
+
 			super.onPageFinished(webView, url);
-			if(url.indexOf("about:blank") == 0) return;
+
 		}
 
 		@Override
 		public void onReceivedSslError(WebView webView, SslErrorHandler sslErrorHandler, com.tencent.smtt.export.external.interfaces.SslError sslError) {
 			super.onReceivedSslError(webView, sslErrorHandler, sslError);
+			if(x5WebResourceLoadCallback != null) {
+				if(x5WebResourceLoadCallback.onReceivedSslError(webView, sslErrorHandler, sslError)) {
+					return;
+				}
+			}
 			sslErrorHandler.proceed();
 		}
 
 		@Override
+		public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest webResourceRequest) {
+			LogCat.d("URL", "收到请求 " + webResourceRequest.getUrl().toString());
+			try {
+				String url = webResourceRequest.getUrl().toString();
+				if(interceptRequests != null && url != null) {
+					for (InterceptRequest interceptRequest : interceptRequests) {
+						if(interceptRequest.interceptRule(X5WebView.this, this, url)) {
+							LogCat.d("URL", "拦截URL " + url);
+							WebResourceResponse webResourceResponse = interceptRequest.getResponse(X5WebView.this, this, url);
+							if(webResourceResponse != null) {
+								return webResourceResponse;
+							} else {
+								break;
+							}
+						}
+					}
+				}
+			} catch (Exception e) {}
+
+			return super.shouldInterceptRequest(webView, webResourceRequest);
+		}
+
+		@Override
 		public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+			if(x5WebResourceLoadCallback != null) {
+				if(x5WebResourceLoadCallback.shouldOverrideUrlLoading(webView, url)) {
+					return true;
+				}
+			}
 			if (url.startsWith("tel:")) {
 				Intent tel = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
 				context.startActivity(tel);
@@ -108,23 +185,53 @@ public class X5WebView extends WebView {
 
 	private WebChromeClient webChromeClient = new WebChromeClient() {
 
-		@Override
-		public void openFileChooser(com.tencent.smtt.sdk.ValueCallback<Uri> valueCallback, String s, String s1) {
-//			X5WebView.this.valueCallback = valueCallback;
-//			Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-//			i.addCategory(Intent.CATEGORY_OPENABLE);
-//			i.setType("*/*");
-//			context.startActivityForResult(Intent.createChooser(i, "File Chooser"), REQUEST_CODE_Choose_FILE);
-			fileChooser.choose();
-		}
+        @Override
+
+        public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> valueCallback, FileChooserParams fileChooserParams) {
+        	LogCat.d("FILE", "监听到文件选择");
+            if(onOpenFileChooser != null) {
+                boolean openFileChooserResult = onOpenFileChooser.onShowFileChooser(webView, valueCallback, fileChooserParams);
+                if(openFileChooserResult) {
+                    return true;
+                }
+            }
+            fileChooser.choose();
+            return true;
+        }
+
+//        // For Android 4.1
+//        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
+//            if(onOpenFileChooser != null) {
+//                boolean openFileChooserResult = onOpenFileChooser.onShowFileChooser(webView, valueCallback, fileChooserParams);
+//                if(openFileChooserResult) {
+//                    return true;
+//                }
+//            }
+//            fileChooser.choose();
+//        }
+
+//      @Override
+//		public void openFileChooser(com.tencent.smtt.sdk.ValueCallback<Uri> valueCallback, String acceptType, String capture) {
+//		  LogCat.d("FILE", "openFileChooser called");
+//			LogCat.d("FILE", "拦截文件上传 acceptType=" + acceptType);
+////			if(onOpenFileChooser != null) {
+////				boolean openFileChooserResult = onOpenFileChooser.openFileChooser(valueCallback, acceptType, capture);
+////					if(openFileChooserResult) {
+////					return;
+////				}
+////			}
+////			fileChooser.choose();
+//		}
 
 		@Override
 		public void onProgressChanged(WebView webView, int progressInPercent) {
 			super.onProgressChanged(webView, progressInPercent);
 			Log.d("webview", "progressInPercent=" + progressInPercent);
-			WebProgressChangedEvent event = new WebProgressChangedEvent();
-			event.setNewProgress(progressInPercent);
-			EventBusUtil.getInstance().post(event);
+			if(x5WebResourceLoadCallback != null) {
+				if(x5WebResourceLoadCallback.onProgressChanged(webView, progressInPercent)) {
+					return;
+				}
+			}
 		}
 
 		@Override
@@ -160,12 +267,21 @@ public class X5WebView extends WebView {
 		}
 	};
 
-	public void setJSCallback() {
-		addJavascriptInterface(new JSCallbackObject(context, this), "jsApiBridge");
+	/**
+	 * 开启JS CALLBACK (JS API)
+	 * @param activity
+     */
+	public void setJSCallback(Activity activity) {
+		addJavascriptInterface(new JSCallbackObject(activity, this), "jsApiBridge");
 	}
 
-	public void setJSCallback(String jsObjName) {
-		addJavascriptInterface(new JSCallbackObject(context, this), jsObjName);
+	/**
+	 * 开启JS CALLBACK (JS API)
+	 * @param activity
+	 * @param jsObjName js 对象名
+	 */
+	public void setJSCallback(Activity activity, String jsObjName) {
+		addJavascriptInterface(new JSCallbackObject(activity, this), jsObjName);
 	}
 
 	/** 初始化设置 */
@@ -175,12 +291,12 @@ public class X5WebView extends WebView {
 		webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
 		webSetting.setAllowFileAccess(true);
 		webSetting.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
-		webSetting.setSupportZoom(true);
-		webSetting.setBuiltInZoomControls(true);
+		webSetting.setSupportZoom(false);
+		webSetting.setBuiltInZoomControls(false);
 		webSetting.setUseWideViewPort(true);
 		webSetting.setSupportMultipleWindows(true);
 		// webSetting.setLoadWithOverviewMode(true);
-		webSetting.setAppCacheEnabled(true);
+		webSetting.setAppCacheEnabled(false);
 		// webSetting.setDatabaseEnabled(true);
 		webSetting.setDomStorageEnabled(true);
 		webSetting.setGeolocationEnabled(true);
@@ -189,6 +305,8 @@ public class X5WebView extends WebView {
 		webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
 		// webSetting.setRenderPriority(WebSettings.RenderPriority.HIGH);
 		webSetting.setCacheMode(WebSettings.LOAD_NO_CACHE);
+		webSetting.setSupportZoom(false);
+		webSetting.setTextZoom(100);
 
 		// this.getSettingsExtension().setPageCacheCapacity(IX5WebSettings.DEFAULT_CACHE_CAPACITY);//extension
 		// settings 的设计
@@ -263,6 +381,14 @@ public class X5WebView extends WebView {
 		});
 	}
 
+	public void testJsAPI(HashMap<String, Object> params) {
+		String paramJson = new Gson().toJson(params);
+		String cmd = "window.jsApiBridge.app_callback(${params})";
+		cmd = cmd.replace("${params}", "'" + paramJson + "'");
+		LogCat.d("JS", cmd);
+		execJS(cmd);
+	}
+
 	public ValueCallback<Uri> getValueCallback() {
 		return valueCallback;
 	}
@@ -289,7 +415,11 @@ public class X5WebView extends WebView {
 		void onChanged(String url, int i);
 	}
 
-//	public void addJSCallback(Activity context, String appId) {
+	public void setOnOpenFileChooser(OnOpenFileChooser onOpenFileChooser) {
+		this.onOpenFileChooser = onOpenFileChooser;
+	}
+
+	//	public void addJSCallback(Activity context, String appId) {
 //		addJavascriptInterface(new JSCallbackObject(context, this, appId), "jsApiBridge");
 //	}
 
@@ -305,4 +435,25 @@ public class X5WebView extends WebView {
 		getSettings().setUserAgentString(getSettings().getUserAgentString() + " " + userAgent);
 	}
 
+	/**
+	 * 添加请求拦截器
+	 * @param interceptRequest
+     */
+	public void addInterceptRequest(InterceptRequest interceptRequest) {
+		if(interceptRequest != null) {
+			interceptRequests.add(interceptRequest);
+		}
+	}
+	/**
+	 * 删除请求拦截机器
+	 */
+	public void removeInterceptRequest(InterceptRequest interceptRequest) {
+		if(interceptRequest != null) {
+			interceptRequests.remove(interceptRequest);
+		}
+	}
+
+	public void setX5WebResourceLoadCallback(X5WebResourceLoadCallback x5WebResourceLoadCallback) {
+		this.x5WebResourceLoadCallback = x5WebResourceLoadCallback;
+	}
 }

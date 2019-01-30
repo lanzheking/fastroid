@@ -7,6 +7,7 @@ import com.honestwalker.android.commons.jscallback.bean.JSActionConfigBean;
 import com.honestwalker.android.commons.jscallback.bean.JSActionParamBean;
 import com.honestwalker.android.commons.jscallback.io.ConfigLoader;
 import com.honestwalker.android.spring.context.ApplicationContext;
+import com.honestwalker.android.spring.context.ApplicationContextUtils;
 import com.honestwalker.androidutils.IO.LogCat;
 import com.honestwalker.androidutils.exception.ExceptionUtil;
 
@@ -47,20 +48,33 @@ public class JSActionExecutor<WEBVIEW> {
      * @param json
      */
     public static <WEBVIEW> String execute(Activity context , WEBVIEW webView, String json) {
+
         // 根据action 得到响应的 JSActionConfigBean 对象
         LogCat.d("JS", "json=" + json);
         JSActionParamBean actionBean = new Gson().fromJson(json , JSActionParamBean.class);
         String action = actionBean.getAction();
-        LogCat.d("JS", "action=" + json);
+
+        if(PreventRepeatingManager.isRepeating(action)) return "FAIL";
+
+        LogCat.d("JS", "action=" + action);
         try {
+
             // 获取实现具体业务的JSCallbackAction对象
-            JSCallbackActionSupport jsCallbackAction = ApplicationContext.getBean(action, JSCallbackActionSupport.class);
+            JSCallbackActionSupport jsCallbackAction = ApplicationContextUtils.getApplicationContext().getBean(action, JSCallbackActionSupport.class);
             if(jsCallbackAction == null) {
-                LogCat.d("JS", "找不打JS action对应的ActionBean对象");
+                LogCat.d("JS", "找不打JS action对应的ActionBean对象 name=" + action);
                 return "fail";
             }
             LogCat.d("JS", "jsCallbackAction===============" + jsCallbackAction);
             jsCallbackAction.setParamJson(json);
+
+//            PreventRepeating preventRepeating = jsCallbackAction.getClass().getAnnotation(PreventRepeating.class);
+//            if(preventRepeating != null) {
+//
+//            }
+
+//            PreventRepeatingManager.startExecute(action);
+
             return jsCallbackAction.execute(context, json, webView);
         } catch (Exception e) {
             ExceptionUtil.showException("JS", e);

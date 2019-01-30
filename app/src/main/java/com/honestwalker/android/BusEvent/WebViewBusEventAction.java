@@ -18,15 +18,16 @@ public abstract class WebViewBusEventAction<W> extends BusEventAction {
     protected W webView;
 
     protected WebViewBusEventAction(Activity context, W webView) {
-        super(context);
+        super();
+        this.context = context;
         this.webView = webView;
     }
 
-    public void unRegisterBusEvent() {
-        if(HermesEventBus.getDefault().isRegistered(this)) {
-            LogCat.d("BusEvent", "反注册:" + this);
-            HermesEventBus.getDefault().unregister(this);
-        }
-    }
+//    public void unRegisterBusEvent() {
+//        if(HermesEventBus.getDefault().isRegistered(this)) {
+//            LogCat.d("BusEvent", "反注册:" + this);
+//            HermesEventBus.getDefault().unregister(this);
+//        }
+//    }
 
 }

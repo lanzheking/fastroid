@@ -31,7 +31,7 @@ public class LogCat {
 
 	public static void d(String tag, Object msg) {
 		if (msg == null) {
-			Log.i(tag, "");
+			Log.d(tag, "");
 		} else {
 			logd(tag, msg + "");
 		}
@@ -121,7 +121,7 @@ public class LogCat {
 		String msgStr = msg + "";
 
 		if(msgStr.length() <= segmentationLength) {
-			Log.i(tag, getCaller() + msgStr + "\r");
+			Log.d(tag, getCaller() + msgStr + "\r");
 			return;
 		}
 
@@ -173,6 +173,29 @@ public class LogCat {
 		LogCat.d(msg + "   >  " + (endTime - startTime));
 		startTime = 0;
 		endTime   = 0;
+	}
+
+	public static class Time {
+
+		static long start = 0l;
+		static long now = 0l;
+
+		public static void now(String text) {
+			long mNow = System.currentTimeMillis();
+			if(now == 0) {
+				start = mNow;
+				LogCat.d("Time", "[启动] " + text);
+			} else {
+				LogCat.d("Time", "[耗时: " + (mNow - start) + " lastStep:" + (mNow - now) +"] " + text);
+			}
+
+			now = mNow;
+		}
+
+		public static void reset() {
+			now = 0l;
+		}
+
 	}
 
 }

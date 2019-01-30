@@ -9,8 +9,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.security.MessageDigest;
 
 import com.honestwalker.androidutils.exception.ExceptionUtil;
 
@@ -162,6 +166,88 @@ public class FileIO {
      */
     public static void append(String fileName, String content) {
         write(fileName, content, true);
+    }
+
+    /**
+     * 删除目录下所有文件和目录
+     * @param path
+     */
+    public static void removeAllFileAndDir(String path) {
+        File parentDir = new File(path);
+        if(!parentDir.exists() || !parentDir.isDirectory()) return;
+        File[] subFiles = parentDir.listFiles();
+        for (File subFile : subFiles) {
+            try {
+                if(subFile.isDirectory()) {
+                    deleteDir(subFile);
+                } else {
+                    subFile.delete();
+                }
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
+    public static void deleteDir(File dir){
+        if(dir.isDirectory()){
+            File[] files = dir.listFiles();
+            for(int i=0; i<files.length; i++) {
+                deleteDir(files[i]);
+            }
+        }
+        dir.delete();
+    }
+
+    public static String getMd5ByFile(InputStream is, File cacheFile) throws FileNotFoundException {
+        FileOutputStream fos = null;
+        try {
+            byte[] data = new byte[2048];
+            int nbread = 0;
+            if(cacheFile.exists()) cacheFile.delete();
+            cacheFile.createNewFile();
+            fos = new FileOutputStream(cacheFile);
+            while((nbread = is.read(data))>-1) {
+                fos.write(data,0,nbread);
+            }
+            String fileMD5 = FileIO.getMd5ByFile(cacheFile);
+            LogCat.d("FILE", cacheFile.getPath() + "  " + fileMD5);
+            return fileMD5;
+        } catch (Exception ex) {
+        } finally{
+            if (fos!=null){
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return "";
+    }
+
+
+    public static String getMd5ByFile(File file) throws FileNotFoundException {
+        String value = null;
+        FileInputStream in = new FileInputStream(file);
+        try {
+            MappedByteBuffer byteBuffer = in.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, file.length());
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            md5.update(byteBuffer);
+            BigInteger bi = new BigInteger(1, md5.digest());
+            value = bi.toString(16);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if(null != in) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return value;
     }
 
 }

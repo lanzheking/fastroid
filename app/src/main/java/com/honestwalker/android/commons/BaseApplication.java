@@ -2,7 +2,9 @@ package com.honestwalker.android.commons;
 
 import android.content.Context;
 
+import com.honestwalker.android.BasicConfig;
 import com.honestwalker.android.fastroid.R;
+import com.honestwalker.android.spring.core.annotation.Autowired;
 import com.honestwalker.androidutils.Application;
 import com.honestwalker.androidutils.IO.LogCat;
 import com.honestwalker.androidutils.UIHandler;
@@ -57,6 +59,10 @@ public class BaseApplication extends android.app.Application  {
 
     public static void exit() {
         Application.exit(context);
+    }
+
+    public boolean isWelcomeProcess() {
+        return ProcessUtil.getCurProcessName(this).endsWith(":welcome");
     }
 
 }

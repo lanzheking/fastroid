@@ -29,6 +29,5 @@ class ContentViewInjector implements Injector {
 
         if(contentView == null) return;
         activity.setContentView(contentView.value());
-        Log.d("Spring", "contentView=" + contentView.value());
     }
 }

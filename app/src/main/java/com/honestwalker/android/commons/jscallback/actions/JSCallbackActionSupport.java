@@ -30,6 +30,9 @@ public abstract class JSCallbackActionSupport<T extends JSActionParamBean, WEBVI
 
     protected static final String SUCCESS = "success";
     protected static final String FAIL = "fail";
+    protected static final String ERROR = "error";
+
+    public JSCallbackActionSupport(){}
 
     public String execute(final Activity context, String paramJson, final WEBVIEW webView) {
         Type type = getClass().getGenericSuperclass();

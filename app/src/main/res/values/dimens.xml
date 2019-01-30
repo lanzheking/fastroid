@@ -24,5 +24,14 @@
 
     <integer name="arrow_scaleX">10</integer>
     <integer name="arrow_scaleY">20</integer>
+    <integer name="border_thickness">10</integer>
+
+    <dimen name="border_thickness">3dp</dimen>
+    <dimen name="corner_thickness">5dp</dimen>
+    <dimen name="guideline_thickness">1px</dimen>
+
+    <dimen name="target_radius">24dp</dimen>
+    <dimen name="snap_radius">3dp</dimen>
+    <dimen name="corner_length">20dp</dimen>
 
 </resources>

@@ -3,6 +3,8 @@ package com.honestwalker.android.spring.core.inject;
 import android.app.Activity;
 import android.view.View;
 
+import com.honestwalker.androidutils.IO.LogCat;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -136,11 +138,13 @@ public class Injection {
      */
     public static void inject(Activity activity) {
 
+        long start = System.currentTimeMillis();
         try {
             new ContentViewInjector().inject(activity, null, null);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+        LogCat.d("Time", activity.getClass().getName() + " SetContentView 耗时:" + (System.currentTimeMillis() - start));
 
         if(activity == null) return;
 

@@ -3,19 +3,10 @@ package com.honestwalker.android.spring.core.utils;
 
 import android.content.Context;
 
-import com.honestwalker.androidutils.IO.LogCat;
-
-import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,7 +17,7 @@ import dalvik.system.DexFile;
  */
 public class PckScanner {
 
-    public static List<String> getClassName(Context context, String packageName, boolean recursive) {
+    public static List<String> getClassName(Context context, String packageName) {
         List<String >classNameList=new ArrayList<String >();
         try {
             DexFile df = new DexFile(context.getPackageCodePath());//通过DexFile查找当前的APK中可执行文件
@@ -36,6 +27,7 @@ public class PckScanner {
 
             while (enumeration.hasMoreElements()) {//遍历
                 String className = enumeration.nextElement();
+                if(className.indexOf("$") > 0) continue;
 
                 Matcher matcher = pattern.matcher(className);
 
@@ -43,12 +35,6 @@ public class PckScanner {
                     classNameList.add(className);
                 }
 
-//                if (packageName.indexOf("*") >= 0) {
-//                } else {
-//                    if (className.contains(packageName)) {//在当前所有可执行的类里面查找包含有该包名的所有类
-//                        classNameList.add(className);
-//                    }
-//                }
             }
         } catch (IOException e) {
             e.printStackTrace();

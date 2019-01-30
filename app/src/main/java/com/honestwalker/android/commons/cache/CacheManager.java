@@ -2,11 +2,12 @@ package com.honestwalker.android.commons.cache;
 
 import android.content.Context;
 
-import com.honestwalker.android.commons.config.ContextProperties;
+import com.honestwalker.android.BasicConfig;
 import com.honestwalker.androidutils.IO.ObjectStreamIO;
 import com.honestwalker.androidutils.IO.SharedPreferencesLoader;
 import com.honestwalker.androidutils.exception.ExceptionUtil;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -60,7 +61,6 @@ public class CacheManager<T> {
      * 获取缓存对象，只支持ApplicaiontContext, ObjectStream, SharedPreferences
      */
     private T get() {
-
         if (CacheType.ApplicaiontContext.equals(cacheType)) {
             return (T) applicationContextParams.get(name);
         } else if (CacheType.SharedPreferences.equals(cacheType)) {
@@ -71,7 +71,7 @@ public class CacheManager<T> {
         } else if (CacheType.ObjectStream.equals(cacheType)) {
             try {
                 return (T) ObjectStreamIO.input(
-                        ContextProperties.getConfig().cachePath, name);
+                        "/", name);
             } catch (Exception e) {
                 ExceptionUtil.showException(e);
             }
@@ -143,10 +143,10 @@ public class CacheManager<T> {
             try {
                 if (cacheObj == null) {
                     ObjectStreamIO.remove(
-                            ContextProperties.getConfig().cachePath, name);
+                            "/", name);
                 } else {
                     ObjectStreamIO.output(
-                            ContextProperties.getConfig().cachePath, cacheObj,
+                            "/", cacheObj,
                             name);
                 }
             } catch (Exception e) {

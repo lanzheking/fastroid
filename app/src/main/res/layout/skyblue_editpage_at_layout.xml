@@ -23,7 +23,7 @@
         android:layout_below="@id/textEditText"
         android:layout_marginTop="2dp"
         android:layout_toRightOf="@id/atTextView"
-        android:text="@string/list_friends"
+        android:text="list_friends"
         android:textColor="#333333"
         android:textSize="14sp" />
 </RelativeLayout>

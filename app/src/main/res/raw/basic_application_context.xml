@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.lanzhe.org/schema/beans"
+       xmlns:context="http://www.lanzhe.org/schema/context">
+
+    <!-- 全局配置 -->
+    <bean id="basicConfig" class="com.honestwalker.android.BasicConfig" scope="singleton">
+        <property id="cacheDir" value="ZJeCommand" />
+    </bean>
+
+</beans>

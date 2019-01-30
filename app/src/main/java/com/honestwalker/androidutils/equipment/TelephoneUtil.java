@@ -15,6 +15,7 @@ import android.text.ClipboardManager;
 
 import com.honestwalker.androidutils.IO.LogCat;
 import com.honestwalker.androidutils.IO.SharedPreferencesLoader;
+import com.honestwalker.androidutils.Permission.PermissionManager;
 import com.honestwalker.androidutils.StringUtil;
 
 public class TelephoneUtil {

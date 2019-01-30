@@ -13,11 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
-import com.honestwalker.android.commons.BaseApplication;
-import com.honestwalker.android.commons.config.ContextProperties;
+import com.honestwalker.android.BasicConfig;
 import com.honestwalker.android.commons.utils.StartActivityHelper;
+import com.honestwalker.android.spring.context.ApplicationContext;
+import com.honestwalker.android.spring.context.ApplicationContextUtils;
+import com.honestwalker.android.spring.core.annotation.Autowired;
 import com.honestwalker.android.spring.core.inject.Injection;
+import com.honestwalker.androidutils.IO.FileIO;
 import com.honestwalker.androidutils.IO.LogCat;
+import com.honestwalker.androidutils.Permission.PermissionManager;
 import com.honestwalker.androidutils.ViewUtils.ViewSizeHelper;
 import com.honestwalker.androidutils.equipment.DisplayUtil;
 import com.honestwalker.androidutils.equipment.SDCardUtil;
@@ -56,6 +60,9 @@ public abstract class BaseActivity extends FragmentActivity {
 	public View contentView;
 	
 	private long onResumeTime = 0;
+
+	@Autowired
+	public PermissionManager permissionManager;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -146,23 +153,21 @@ public abstract class BaseActivity extends FragmentActivity {
 		return context;
 	}
 
-	/**
-	 * 获取缓存路径 ， 末尾已经包含 /
-	 */
-	public String getCachePath() {
-		return ContextProperties.getConfig().cachePath;
-	}
-
 	public String getImageCachePath() {
-		return ContextProperties.getConfig().cachePath + "image/";
+		return "/image/";
 	}
 
 	public String getSDCachePath() {
-		return SDCardUtil.getSDRootPath() + ContextProperties.getConfig().sdcartCacheName + "/";
+		return  getBasicConfig().getSDCardCacheDir() + "/";
 	}
 
 	public String getSDImageCachePath() {
-		return SDCardUtil.getSDRootPath() + ContextProperties.getConfig().sdcartCacheName + "/image/";
+		return getBasicConfig().getSDCardCacheDir() + "/image/";
+	}
+
+	public BasicConfig getBasicConfig() {
+		BasicConfig basicConfig = ApplicationContextUtils.getApplicationContext().getBean("basicConfig", BasicConfig.class);
+		return basicConfig;
 	}
 
 	public void clearImageCache() {
@@ -217,6 +222,16 @@ public abstract class BaseActivity extends FragmentActivity {
 			}
 		} catch (Exception e) {}
 
+	}
+
+	/**
+	 * 建立图片缓存文件夹
+	 */
+	public void createImageCachePath() {
+		if(permissionManager.hasExtrnalStoragePermission(this)) {
+			String cachePath = getSDImageCachePath();
+			FileIO.removeAllFileAndDir(cachePath);
+		}
 	}
 
 	public Intent getIntent() {

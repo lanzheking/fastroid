@@ -73,22 +73,4 @@
 	<string name="ssdk_share_to_mingdao">分享到明道</string>
 	<string name="ssdk_share_to_qzone_default">来自%s的分享</string>
 	<string name="ssdk_use_login_button">请改用“登录”按钮</string>
-
-	<string name="cancel">Cancel</string>
-	<string name="finish">Finish</string>
-	<string name="sharing">Sharing operation is working in the background…</string>
-	<string name="share_to">Share to </string>
-	<string name="share">Share</string>
-	<string name="multi_share">Photo Sharing</string>
-	<string name="share_completed">Operation succeeded</string>
-	<string name="share_canceled">Operation canceled</string>
-	<string name="select_one_plat_at_least">Please select a target platform</string>
-	<string name="list_friends">Friends on %s</string>
-	<string name="share_failed">Operation failed</string>
-	<string name="pull_to_refresh">Pull down to refresh</string>
-	<string name="release_to_refresh">Release to refresh</string>
-	<string name="refreshing">Refreshing…</string>
-	<string name="shake2share">Shake your phone!</string>
-	<string name="select_a_friend">Please select a friend</string>
-
 </resources>

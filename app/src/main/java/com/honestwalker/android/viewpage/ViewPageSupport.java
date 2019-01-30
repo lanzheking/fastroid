@@ -112,7 +112,7 @@ public abstract class ViewPageSupport {
     public static void toPage(Context context, String viewPageBeanName, Intent intent) {
         if(intent == null) intent = new Intent(context, ViewPageActivity.class);
         try {
-            if(ApplicationContext.getBean(viewPageBeanName) == null) {
+            if(ApplicationContextUtils.getApplicationContext().getBean(viewPageBeanName) == null) {
                 throw new BeanNotFoundException(viewPageBeanName);
             }
         } catch (Exception e) {
@@ -135,7 +135,7 @@ public abstract class ViewPageSupport {
     public static void toPageForResult(Activity context, String viewPageBeanName, Intent intent, int requestCode) {
         if(intent == null) intent = new Intent(context, ViewPageActivity.class);
         try {
-            if(ApplicationContext.getBean(viewPageBeanName) == null) {
+            if(ApplicationContextUtils.getApplicationContext().getBean(viewPageBeanName) == null) {
                 throw new BeanNotFoundException(viewPageBeanName);
             }
         } catch (Exception e) {

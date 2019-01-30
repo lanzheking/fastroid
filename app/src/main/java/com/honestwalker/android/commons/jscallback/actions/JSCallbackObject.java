@@ -29,6 +29,7 @@ public class JSCallbackObject<WEBVIEW> {
     @JavascriptInterface
     public String app_callback(final String json) {
 //        return JSActionExecutor.execute(context, appId, webView ,json);
+        LogCat.d("JavascriptInterface", "app_callback > " + json);
         return JSActionExecutor.execute(context, webView ,json);
     }
 

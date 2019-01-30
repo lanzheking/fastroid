@@ -6,6 +6,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 
+import com.honestwalker.android.BusEvent.EventBusUtil;
+import com.honestwalker.android.commons.eventbus.event.WelcomeViewHidden;
 import com.honestwalker.androidutils.UIHandler;
 
 /**
@@ -25,7 +27,7 @@ public class WelcomeViewManager {
     private long minTime = 0;
     private long maxTime = 0;
 
-    private long aminTime = 1000;
+    private long animTime = 1000;
 
     /**
      *startWelcomeTime
@@ -51,8 +53,8 @@ public class WelcomeViewManager {
         return isWelcomeViewHidden;
     }
 
-    public void setAminTime(long aminTime) {
-        this.aminTime = aminTime;
+    public void setAnimTime(long animTime) {
+        this.animTime = animTime;
     }
 
     public void startWelcomeAction() {
@@ -96,7 +98,7 @@ public class WelcomeViewManager {
         if(isWelcomeViewHidden) return;
         isWelcomeViewHidden = true;
         Animation hiddenAction = new AlphaAnimation(1.0f, 0.0f);
-        hiddenAction.setDuration(aminTime);
+        hiddenAction.setDuration(animTime);
         hiddenAction.setFillAfter(true);
 
         hiddenAction.setAnimationListener(new Animation.AnimationListener() {
@@ -108,17 +110,23 @@ public class WelcomeViewManager {
 
                 contairView.setVisibility(View.GONE);
 
-                for (ImageView imageView : willRecyleImageViews) {
-                    imageView.setImageBitmap(null);
+                if(willRecyleImageViews != null) {
+                    for (ImageView imageView : willRecyleImageViews) {
+                        imageView.setImageBitmap(null);
+                    }
                 }
 
-                for (Bitmap bitmap : willRecyleBitmaps) {
-                    try {
-                        if(!bitmap.isRecycled()) {
-                            bitmap.recycle();
-                        }
-                    } catch (Exception e){}
+                if(willRecyleBitmaps != null) {
+                    for (Bitmap bitmap : willRecyleBitmaps) {
+                        try {
+                            if(!bitmap.isRecycled()) {
+                                bitmap.recycle();
+                            }
+                        } catch (Exception e){}
+                    }
                 }
+
+                EventBusUtil.getInstance().post(new WelcomeViewHidden());
 
             }
 
